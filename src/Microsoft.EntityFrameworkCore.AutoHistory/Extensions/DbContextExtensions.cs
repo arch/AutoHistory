@@ -27,7 +27,7 @@ namespace Microsoft.EntityFrameworkCore {
         internal static AutoHistory AutoHistory(this EntityEntry entry) {
             // TODO: get the really mapped table name.
             var history = new AutoHistory {
-                TypeName = entry.Entity.GetType().FullName,
+                TypeName = entry.Entity.GetType().Name,
             };
 
             // Get the mapped properties for the entity type.
@@ -38,6 +38,9 @@ namespace Microsoft.EntityFrameworkCore {
             switch (entry.State) {
                 case EntityState.Added:
                     foreach (var prop in properties) {
+                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey()) {
+                            continue;
+                        }
                         //json[prop.Metadata.Name] = new JObject(prop.CurrentValue);
                         json[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue);
                     }
