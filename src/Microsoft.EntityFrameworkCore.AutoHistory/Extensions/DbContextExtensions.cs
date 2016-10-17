@@ -11,7 +11,7 @@ namespace Microsoft.EntityFrameworkCore {
     /// <summary>
     /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
-    public static class DbContextAutoHistoryExtensions {
+    public static class DbContextExtensions {
         /// <summary>
         /// Ensures the automatic history.
         /// </summary>

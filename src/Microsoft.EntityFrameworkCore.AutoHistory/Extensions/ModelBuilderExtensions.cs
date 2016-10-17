@@ -6,7 +6,7 @@ namespace Microsoft.EntityFrameworkCore {
     /// <summary>
     /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
-    public static class ModelBuilderEnableAutoHistoryExtensions {
+    public static class ModelBuilderExtensions {
         /// <summary>
         /// Enables the automatic recording change history.
         /// </summary>
@@ -16,7 +16,7 @@ namespace Microsoft.EntityFrameworkCore {
             modelBuilder.Entity<AutoHistory>(b => {
                 b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
                 b.Property(c => c.TypeName).IsRequired().HasMaxLength(128);
-                b.Property(c => c.Changed).HasMaxLength(2048);
+                b.Property(c => c.Changed).HasMaxLength(1024);
                 // This MSSQL only
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");
             });
