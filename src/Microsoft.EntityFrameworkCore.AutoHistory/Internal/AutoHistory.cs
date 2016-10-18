@@ -20,10 +20,10 @@ namespace Microsoft.EntityFrameworkCore.Internal {
         public string RowId { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the type.
+        /// Gets or sets the name of the table.
         /// </summary>
-        /// <value>The name of the type.</value>
-        public string TypeName { get; set; }
+        /// <value>The name of the table.</value>
+        public string TableName { get; set; }
 
         /// <summary>
         /// Gets or sets the json about the changing.

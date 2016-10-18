@@ -25,9 +25,8 @@ namespace Microsoft.EntityFrameworkCore {
         }
 
         internal static AutoHistory AutoHistory(this EntityEntry entry) {
-            // TODO: get the really mapped table name.
             var history = new AutoHistory {
-                TypeName = entry.Entity.GetType().Name,
+                TableName = entry.Metadata.Relational().TableName,
             };
 
             // Get the mapped properties for the entity type.

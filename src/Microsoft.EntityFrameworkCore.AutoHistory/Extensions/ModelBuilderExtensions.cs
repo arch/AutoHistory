@@ -15,8 +15,8 @@ namespace Microsoft.EntityFrameworkCore {
         public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder) {
             modelBuilder.Entity<AutoHistory>(b => {
                 b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
-                b.Property(c => c.TypeName).IsRequired().HasMaxLength(128);
-                b.Property(c => c.Changed).HasMaxLength(1024);
+                b.Property(c => c.TableName).IsRequired().HasMaxLength(128);
+                b.Property(c => c.Changed).HasMaxLength(2048);
                 // This MSSQL only
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");
             });
