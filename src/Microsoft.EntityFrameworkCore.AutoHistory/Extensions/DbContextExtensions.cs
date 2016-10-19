@@ -18,7 +18,8 @@ namespace Microsoft.EntityFrameworkCore {
         /// <param name="context">The context.</param>
         public static void EnsureAutoHistory(this DbContext context) {
             // Must ToArray() here for excluding the AutoHistory model.
-            var entries = context.ChangeTracker.Entries().Where(e => e.State != EntityState.Unchanged && e.State != EntityState.Detached).ToArray();
+            // Currently, only support Modified and Deleted entity.
+            var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
             foreach (var entry in entries) {
                 context.Add(entry.AutoHistory());
             }
@@ -78,7 +79,7 @@ namespace Microsoft.EntityFrameworkCore {
                 case EntityState.Detached:
                 case EntityState.Unchanged:
                 default:
-                    throw new NotSupportedException("AutoHistory only support Added, Deleted and Modified entity.");
+                    throw new NotSupportedException("AutoHistory only support Deleted and Modified entity.");
             }
 
             return history;
