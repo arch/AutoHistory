@@ -1,5 +1,5 @@
 ﻿{
-  "version": "1.0.0-*",
+  "version": "1.1.0-*",
   "description": "A plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.",
   "authors": [ "rigofunc", "rigofunc@outlook.com", "lotosbin", "lotosbin@gmail.com" ],
   "packOptions": {
