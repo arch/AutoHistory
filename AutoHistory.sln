@@ -1,20 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{EEF95A1B-E224-4488-91ED-4CC4EC3CEEE3}"
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{487D0423-7331-4C1E-AF38-01CD609126FB}"
-	ProjectSection(SolutionItems) = preProject
-		global.json = global.json
-	EndProjectSection
-EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.EntityFrameworkCore.AutoHistory", "src\Microsoft.EntityFrameworkCore.AutoHistory\Microsoft.EntityFrameworkCore.AutoHistory.xproj", "{5927DE0F-FA62-4B71-8AAF-2B3DDC405E34}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{504C6707-0D9C-4FA7-861D-B1A97AF39E32}"
 EndProject
-Project("{8BB2217D-0F2D-49D1-97BC-3654ED321F3B}") = "Microsoft.EntityFrameworkCore.AutoHistory.Test", "test\Microsoft.EntityFrameworkCore.AutoHistory.Test\Microsoft.EntityFrameworkCore.AutoHistory.Test.xproj", "{2F6C239E-9F05-4654-936B-CFBB00412E4B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.EntityFrameworkCore.AutoHistory", "src\Microsoft.EntityFrameworkCore.AutoHistory\Microsoft.EntityFrameworkCore.AutoHistory.csproj", "{5927DE0F-FA62-4B71-8AAF-2B3DDC405E34}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.EntityFrameworkCore.AutoHistory.Test", "test\Microsoft.EntityFrameworkCore.AutoHistory.Test\Microsoft.EntityFrameworkCore.AutoHistory.Test.csproj", "{2F6C239E-9F05-4654-936B-CFBB00412E4B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

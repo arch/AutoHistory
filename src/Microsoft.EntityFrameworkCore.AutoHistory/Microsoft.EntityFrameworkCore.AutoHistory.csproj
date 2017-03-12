@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Description>A plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.</Description>
+    <VersionPrefix>1.1.1</VersionPrefix>
+    <Authors>rigofunc;rigofunc@outlook.com;lotosbin;lotosbin@gmail.com</Authors>
+    <TargetFrameworks>net46;netstandard1.6.1</TargetFrameworks>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <AssemblyName>Microsoft.EntityFrameworkCore.AutoHistory</AssemblyName>
+    <PackageId>Microsoft.EntityFrameworkCore.AutoHistory</PackageId>
+    <PackageTags>Entity Framework Core;entity-framework-core;EF;Data;O/RM;Auto History;auto-history</PackageTags>
+    <PackageProjectUrl>https://github.com/lovedotnet/AutoHistory</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/lovedotnet/AutoHistory/blob/master/LICENSE</PackageLicenseUrl>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/lovedotnet/AutoHistory.git</RepositoryUrl>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="1.1.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="1.1.1" />
+  </ItemGroup>
+</Project>
