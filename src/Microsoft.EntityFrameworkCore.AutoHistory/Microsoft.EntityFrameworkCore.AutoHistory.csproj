@@ -10,10 +10,10 @@
     <AssemblyName>Microsoft.EntityFrameworkCore.AutoHistory</AssemblyName>
     <PackageId>Microsoft.EntityFrameworkCore.AutoHistory</PackageId>
     <PackageTags>Entity Framework Core;entity-framework-core;EF;Data;O/RM;Auto History;auto-history</PackageTags>
-    <PackageProjectUrl>https://github.com/lovedotnet/AutoHistory</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/lovedotnet/AutoHistory/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/arch/AutoHistory</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/arch/AutoHistory/blob/master/LICENSE</PackageLicenseUrl>
     <RepositoryType>git</RepositoryType>
-    <RepositoryUrl>https://github.com/lovedotnet/AutoHistory.git</RepositoryUrl>
+    <RepositoryUrl>https://github.com/arch/AutoHistory.git</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="9.0.1" />
