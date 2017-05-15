@@ -21,7 +21,32 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test {
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
-                Assert.Equal(4, count);
+                Assert.Equal(2, count);
+            }
+        }
+        [Fact]
+        public void Entity_Update_AutoHistory_Test()
+        {
+            using (var db = new BloggingContext())
+            {
+                var blog = new Blog
+                {
+                    Url = "http://blogs.msdn.com/adonet",
+                    Posts = new List<Post> {
+                        new Post {
+                            Title = "xUnit",
+                            Content = "Post from xUnit test."
+                        }
+                    }
+                };
+                db.Attach(blog);
+                db.SaveChanges();
+
+                blog.Posts[0].Content = "UpdatedPost";
+                db.EnsureAutoHistory();
+                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+
+                Assert.Equal(1, count);
             }
         }
     }
