@@ -6,7 +6,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test {
         public DbSet<Post> Posts { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) {
-            optionsBuilder.UseInMemoryDatabase("test");
+            optionsBuilder.UseSqlServer(@"Server=(localdb)\mssqllocaldb;Database=AutoHistory;Trusted_Connection=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder) {

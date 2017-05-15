@@ -3,7 +3,7 @@
     <Description>A plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.</Description>
     <VersionPrefix>1.1.1</VersionPrefix>
     <Authors>rigofunc;rigofunc@outlook.com;lotosbin;lotosbin@gmail.com</Authors>
-    <TargetFrameworks>net4.5.1;netstandard1.6.1</TargetFrameworks>
+    <TargetFrameworks>net46;netstandard1.6.1</TargetFrameworks>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
