@@ -3,30 +3,35 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json.Linq;
 
-namespace Microsoft.EntityFrameworkCore {
+namespace Microsoft.EntityFrameworkCore
+{
     /// <summary>
     /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
-    public static class DbContextExtensions {
+    public static class DbContextExtensions
+    {
         /// <summary>
         /// Ensures the automatic history.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static void EnsureAutoHistory(this DbContext context) {
+        public static void EnsureAutoHistory(this DbContext context)
+        {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
             var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
-            foreach (var entry in entries) {
+            foreach (var entry in entries)
+            {
                 context.Add(entry.AutoHistory());
             }
         }
 
-        internal static AutoHistory AutoHistory(this EntityEntry entry) {
-            var history = new AutoHistory {
+        internal static AutoHistory AutoHistory(this EntityEntry entry)
+        {
+            var history = new AutoHistory
+            {
                 TableName = entry.Metadata.Relational().TableName,
             };
 
@@ -35,10 +40,13 @@ namespace Microsoft.EntityFrameworkCore {
             var properties = entry.Properties;
 
             var json = new JObject();
-            switch (entry.State) {
+            switch (entry.State)
+            {
                 case EntityState.Added:
-                    foreach (var prop in properties) {
-                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey()) {
+                    foreach (var prop in properties)
+                    {
+                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
+                        {
                             continue;
                         }
                         //json[prop.Metadata.Name] = new JObject(prop.CurrentValue);
@@ -54,22 +62,25 @@ namespace Microsoft.EntityFrameworkCore {
                     var bef = new JObject();
                     var aft = new JObject();
 
-                    foreach (var prop in properties) {
-                        if (prop.IsModified) {
+                    foreach (var prop in properties)
+                    {
+                        if (prop.IsModified)
+                        {
                             bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue);
                             aft[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue);
                         }
                     }
 
                     json["Before"] = bef;
-                    json["After"]  = aft;
+                    json["After"] = aft;
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
                     history.Changed = json.ToString();
                     break;
                 case EntityState.Deleted:
-                    foreach (var prop in properties) {
+                    foreach (var prop in properties)
+                    {
                         json[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue);
                     }
                     history.RowId = entry.PrimaryKey();
@@ -85,13 +96,16 @@ namespace Microsoft.EntityFrameworkCore {
             return history;
         }
 
-        private static string PrimaryKey(this EntityEntry entry) {
+        private static string PrimaryKey(this EntityEntry entry)
+        {
             var key = entry.Metadata.FindPrimaryKey();
 
             var values = new List<object>();
-            foreach (var property in key.Properties) {
+            foreach (var property in key.Properties)
+            {
                 var value = entry.Property(property.Name).CurrentValue;
-                if (value != null) {
+                if (value != null)
+                {
                     values.Add(value);
                 }
             }

@@ -1,19 +1,21 @@
 ﻿// Copyright (c) Arch team. All rights reserved.
 
-using Microsoft.EntityFrameworkCore.Internal;
-
-namespace Microsoft.EntityFrameworkCore {
+namespace Microsoft.EntityFrameworkCore
+{
     /// <summary>
     /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
-    public static class ModelBuilderExtensions {
+    public static class ModelBuilderExtensions
+    {
         /// <summary>
         /// Enables the automatic recording change history.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to enable auto history functionality.</param>
         /// <returns>The <see cref="ModelBuilder"/> to enable auto history functionality.</returns>
-        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder) {
-            modelBuilder.Entity<AutoHistory>(b => {
+        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<AutoHistory>(b =>
+            {
                 b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
                 b.Property(c => c.TableName).IsRequired().HasMaxLength(128);
                 b.Property(c => c.Changed).HasMaxLength(2048);

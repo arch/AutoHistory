@@ -2,11 +2,13 @@
 
 using System;
 
-namespace Microsoft.EntityFrameworkCore.Internal {
+namespace Microsoft.EntityFrameworkCore
+{
     /// <summary>
     /// Represents the entity change history.
     /// </summary>
-    internal class AutoHistory {
+    public class AutoHistory
+    {
         /// <summary>
         /// Gets or sets the primary key.
         /// </summary>
