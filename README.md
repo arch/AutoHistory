@@ -38,9 +38,9 @@ public class BloggingContext : DbContext
 bloggingContext.EnsureAutoHistory()
 ```
 
-# Intergrate AutoHistory into other Package
+# Integrate AutoHistory into other Package
 
-[Microsoft.EntityFrameworkCore.UnitOfWork](https://github.com/lovedotnet/UnitOfWork) had intergrated this package.
+[Microsoft.EntityFrameworkCore.UnitOfWork](https://github.com/lovedotnet/UnitOfWork) had integrated this package.
 
 
 
