@@ -26,6 +26,12 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The name of the table.</value>
         public string TableName { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the json about the state of entity before of the change.
+        /// </summary>
+        /// <value>The json before the changing.</value>
+        public string BeforeChange { get; set; }
 
         /// <summary>
         /// Gets or sets the json about the changing.
@@ -44,5 +50,17 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Gets or sets the creator of the change.
+        /// </summary>
+        /// <value>The createor name or email.</value>
+        public string CreatedBy { get; set; }
+
+        /// <summary>
+        /// Gets or sets the user's IP address from where the change was done.
+        /// </summary>
+        /// <value>The IP address.</value>
+        public string IPAddress { get; set; }
     }
 }

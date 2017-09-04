@@ -22,7 +22,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                     }
                 });
 
-                db.EnsureAutoHistory();
+                db.EnsureAutoHistory("xxx@example.com", "127.0.0.1");
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
@@ -48,7 +48,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 db.SaveChanges();
 
                 blog.Posts[0].Content = "UpdatedPost";
-                db.EnsureAutoHistory();
+                db.EnsureAutoHistory(null, "xxx@example.com");
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
                 Assert.Equal(1, count);
