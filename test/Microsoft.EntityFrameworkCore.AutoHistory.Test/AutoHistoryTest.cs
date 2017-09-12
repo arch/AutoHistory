@@ -22,7 +22,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                     }
                 });
 
-                db.EnsureAutoHistory("xxx@example.com", "127.0.0.1");
+                db.EnsureAutoHistory("pepito@gmail.com", "127.0.0.1");
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
