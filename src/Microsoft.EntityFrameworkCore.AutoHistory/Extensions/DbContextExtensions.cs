@@ -36,7 +36,7 @@ namespace Microsoft.EntityFrameworkCore
         {
             var history = new AutoHistory
             {
-                TableName = entry.Entity.GetType().Name,
+                EntityName = entry.Metadata.Relational().TableName,
                 CreatedBy = creator,
                 IPAddress = ipAddress
             };
