@@ -25,6 +25,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 db.EnsureAutoHistory("pepito@gmail.com", "127.0.0.1");
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+                
 
                 Assert.Equal(2, count);
             }
