@@ -56,17 +56,5 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// Gets or sets the creator of the change.
-        /// </summary>
-        /// <value>The createor name or email.</value>
-        public string CreatedBy { get; set; }
-
-        /// <summary>
-        /// Gets or sets the user's IP address from where the change was done.
-        /// </summary>
-        /// <value>The IP address.</value>
-        public string IPAddress { get; set; }
     }
 }
