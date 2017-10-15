@@ -21,10 +21,10 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                         }
                     }
                 });
-
                 db.EnsureAutoHistory();
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+                
 
                 Assert.Equal(2, count);
             }
@@ -40,7 +40,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                     Posts = new List<Post> {
                         new Post {
                             Title = "xUnit",
-                            Content = "Post from xUnit test."
+                            //Content = "Post from xUnit test."
                         }
                     }
                 };
@@ -49,7 +49,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
 
                 blog.Posts[0].Content = "UpdatedPost";
                 db.EnsureAutoHistory();
-                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Modified);
 
                 Assert.Equal(1, count);
             }

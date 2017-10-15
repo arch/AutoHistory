@@ -3,8 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using EntityFrameworkCore.Triggers;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -13,12 +16,14 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     public static class DbContextExtensions
     {
+
         /// <summary>
         /// Ensures the automatic history.
         /// </summary>
         /// <param name="context">The context.</param>
         public static void EnsureAutoHistory(this DbContext context)
         {
+
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
             var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
@@ -33,7 +38,17 @@ namespace Microsoft.EntityFrameworkCore
             var history = new AutoHistory
             {
                 TableName = entry.Metadata.Relational().TableName,
+                EntityName = entry.Entity.GetType().Name
             };
+
+            var js = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
+                ContractResolver = new CamelCasePropertyNamesContractResolver(),
+                Formatting = Formatting.Indented,
+                NullValueHandling = NullValueHandling.Ignore
+            });
+
 
             // Get the mapped properties for the entity type.
             // (include shadow properties, not include navigations & references)
@@ -49,8 +64,12 @@ namespace Microsoft.EntityFrameworkCore
                         {
                             continue;
                         }
-                        //json[prop.Metadata.Name] = new JObject(prop.CurrentValue);
-                        json[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue);
+                        json[prop.Metadata.Name] = prop.CurrentValue != null
+                            ? JToken.FromObject(prop.CurrentValue, js)
+                            : JValue.CreateNull();
+
+                        //json[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue, js);
+                        
                     }
 
                     // REVIEW: what's the best way to set the RowId?
@@ -66,26 +85,32 @@ namespace Microsoft.EntityFrameworkCore
                     {
                         if (prop.IsModified)
                         {
-                            bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue);
-                            aft[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue);
+                            bef[prop.Metadata.Name] = prop.OriginalValue != null 
+                            ? JToken.FromObject(prop.OriginalValue, js)
+                            : JValue.CreateNull();
+
+                            aft[prop.Metadata.Name] = prop.CurrentValue != null 
+                            ? JToken.FromObject(prop.CurrentValue, js)
+                            : JValue.CreateNull();
+                           
+                            //bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, js);
+                            //aft[prop.Metadata.Name] = JToken.FromObject(prop.CurrentValue, js);
                         }
                     }
 
-                    json["Before"] = bef;
-                    json["After"] = aft;
-
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
-                    history.Changed = json.ToString();
+                    history.BeforeChange = bef.ToString();
+                    history.Changed = aft.ToString();
                     break;
                 case EntityState.Deleted:
                     foreach (var prop in properties)
                     {
-                        json[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue);
+                        json[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, js);
                     }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
-                    history.Changed = json.ToString();
+                    history.BeforeChange = json.ToString();
                     break;
                 case EntityState.Detached:
                 case EntityState.Unchanged:
