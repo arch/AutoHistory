@@ -28,18 +28,6 @@ namespace Microsoft.EntityFrameworkCore
         public string TableName { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the entity.
-        /// </summary>
-        /// <value>The name of the entity.</value>
-        public string EntityName { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the json about the state of entity before of the change.
-        /// </summary>
-        /// <value>The json before the changing.</value>
-        public string BeforeChange { get; set; }
-
-        /// <summary>
         /// Gets or sets the json about the changing.
         /// </summary>
         /// <value>The json about the changing.</value>

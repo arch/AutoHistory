@@ -24,7 +24,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 db.EnsureAutoHistory();
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
-                
+
 
                 Assert.Equal(2, count);
             }
@@ -40,14 +40,15 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                     Posts = new List<Post> {
                         new Post {
                             Title = "xUnit",
-                            //Content = "Post from xUnit test."
+                            Content = "Post from xUnit test."
                         }
                     }
                 };
                 db.Attach(blog);
                 db.SaveChanges();
 
-                blog.Posts[0].Content = "UpdatedPost";
+                // nullable fix?
+                blog.Posts[0].NumViews = 10;
                 db.EnsureAutoHistory();
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Modified);
 
