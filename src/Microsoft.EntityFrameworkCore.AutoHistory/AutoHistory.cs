@@ -28,6 +28,12 @@ namespace Microsoft.EntityFrameworkCore
         public string TableName { get; set; }
 
         /// <summary>
+        /// Gets or sets the fully qualified name of the entity who represents a database table.
+        /// </summary>
+        /// <value>The fullname of the entity.</value>
+        public string EntityName { get; set; }
+
+        /// <summary>
         /// Gets or sets the json about the changing.
         /// </summary>
         /// <value>The json about the changing.</value>
@@ -44,5 +50,12 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
+
+        /// <summary>
+        /// Gets or sets the ID of parent historical change.
+        /// </summary>
+        /// <value>The create time.</value>
+        public int? ParentId { get; set; }
+        public virtual AutoHistory Parent { get; set; }
     }
 }

@@ -23,6 +23,12 @@ namespace Microsoft.EntityFrameworkCore
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");
             });
 
+            modelBuilder.Entity<AutoHistory>()
+                .HasOne(ah => ah.Parent)
+                .WithOne()
+                .HasForeignKey<AutoHistory>(ah => ah.ParentId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
             return modelBuilder;
         }
     }

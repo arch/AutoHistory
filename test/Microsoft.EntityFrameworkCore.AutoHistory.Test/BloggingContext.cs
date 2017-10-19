@@ -6,16 +6,24 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
     {
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
-
+        public BloggingContext()
+        {}
+        public BloggingContext(DbContextOptions<BloggingContext> options)
+            : base(options)
+        { }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("test");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseInMemoryDatabase("test");
+            }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.EnableAutoHistory();
         }
+
     }
 
     public class Blog
