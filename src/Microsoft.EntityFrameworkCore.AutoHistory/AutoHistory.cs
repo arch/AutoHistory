@@ -50,12 +50,5 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
-
-        /// <summary>
-        /// Gets or sets the ID of parent historical change.
-        /// </summary>
-        /// <value>The create time.</value>
-        public int? ParentId { get; set; }
-        public virtual AutoHistory Parent { get; set; }
     }
 }

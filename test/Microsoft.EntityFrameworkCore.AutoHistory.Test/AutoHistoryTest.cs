@@ -97,11 +97,12 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 blog.Posts[0].Title = "The new Era";
                 db.EnsureAutoHistory();
                 db.SaveChanges();
+                //Testing if there is two history rows
                 Assert.Equal(2, db.DbHistory().Count());
                 Assert.Equal("The new Era",db.Posts.First().Title);
 
                 Assert.Equal(1, db.DbHistory().First().Id);
-                Assert.Equal(1, db.DbHistory().Last().ParentId);
+                Assert.Equal(2, db.DbHistory().Last().Id);
             }
         }
 
@@ -132,12 +133,17 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 blog.Posts[0].Title = "The new Era";
                 db.EnsureAutoHistory();
                 db.SaveChanges();
+                //Testing if there is two history rows
+                Assert.Equal(2, db.DbHistory().Count());
 
+                //Testing Rollback extension method: must report 2 changes
+                object id = blog.Posts[0].PostId;
+                Assert.Equal(2, db.Rollback(blog.Posts[0], id));
 
-                //Testing Rollback extension method
-                int id = db.DbHistory().Last().Id;
-                output.WriteLine(id.ToString());
-                Assert.Equal(1,db.Rollback(id));
+                //Testing if the title of my first post is "xUnit" again
+                Assert.Equal("xUnit",db.Posts.Find(id).Title);
+                //Testing if now there is only one history row in AutoHistory table
+                Assert.Equal(1, db.DbHistory().Count());
 
 
 

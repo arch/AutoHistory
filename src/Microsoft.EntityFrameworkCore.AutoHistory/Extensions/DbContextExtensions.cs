@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
@@ -28,7 +29,7 @@ namespace Microsoft.EntityFrameworkCore
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
             Formatting = Formatting.Indented,
-            NullValueHandling = NullValueHandling.Ignore
+            NullValueHandling = NullValueHandling.Include
         });
 
         /// <summary>
@@ -37,27 +38,23 @@ namespace Microsoft.EntityFrameworkCore
         /// <param name="context">The context.</param>
         public static void EnsureAutoHistory(this DbContext context)
         {
-            __DbHistory = context.Set<AutoHistory>();
-
             // Currently, only support Modified and Deleted entity.
-            var entries = context.ChangeTracker.Entries().Where(e => !Object.ReferenceEquals(e.Entity.GetType(), new Microsoft.EntityFrameworkCore.AutoHistory().GetType())
+            var entries = context.ChangeTracker.Entries().Where(e => !Object.ReferenceEquals(e.Entity.GetType(), new AutoHistory().GetType())
                     && (e.State == EntityState.Modified || e.State == EntityState.Deleted)).ToArray();
             foreach (var entry in entries)
             {
-                context.Add(entry.AutoHistory());
+                context.Add(entry.AutoHistory(context));
             }
         }
 
-        internal static AutoHistory AutoHistory(this EntityEntry entry)
+        internal static AutoHistory AutoHistory(this EntityEntry entry, DbContext context)
         {
-
+            __DbHistory = context.Set<AutoHistory>();
             var history = new AutoHistory
             {
                 TableName = entry.Metadata.Relational().TableName,
-                EntityName = entry.Entity.GetType().FullName
+                EntityName = entry.Entity.GetType().AssemblyQualifiedName
             };
-            AutoHistory parent;
-
             // Get the mapped properties for the entity type.
             // (include shadow properties, not include navigations & references)
             var properties = entry.Properties;
@@ -66,7 +63,6 @@ namespace Microsoft.EntityFrameworkCore
             switch (entry.State)
             {
                 case EntityState.Added:
-                    history.ParentId = null;
                     foreach (var prop in properties)
                     {
                         if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
@@ -86,9 +82,20 @@ namespace Microsoft.EntityFrameworkCore
                 case EntityState.Modified:
                     var bef = new JObject();
                     var aft = new JObject();
-
+                    
                     foreach (var prop in properties)
                     {
+                        if(prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
+                        {
+                            bef[prop.Metadata.Name] = prop.OriginalValue != null
+                            ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
+                            : JValue.CreateNull();
+
+                            aft[prop.Metadata.Name] = prop.CurrentValue != null
+                            ? JToken.FromObject(prop.CurrentValue, _jsonerializer)
+                            : JValue.CreateNull();
+                        }
+
                         if (prop.IsModified)
                         {
                             bef[prop.Metadata.Name] = prop.OriginalValue != null
@@ -103,11 +110,6 @@ namespace Microsoft.EntityFrameworkCore
 
                     json["before"] = bef;
                     json["after"] = aft;
-                    parent = __DbHistory.Where(h => h.RowId == entry.PrimaryKey()).OrderByDescending(x => x.ParentId).FirstOrDefault();
-                    if (parent != null)
-                    {
-                        history.ParentId = parent.Id;
-                    }
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
@@ -120,12 +122,7 @@ namespace Microsoft.EntityFrameworkCore
                             ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
                             : JValue.CreateNull();
                     }
-
-                    parent = __DbHistory.Where(h => h.RowId == entry.PrimaryKey()).OrderByDescending(x => x.ParentId).FirstOrDefault();
-                    if (!parent.Equals(null))
-                    {
-                        history.ParentId = parent.Id;
-                    }
+                    
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
                     history.Changed = json.ToString();
@@ -138,39 +135,50 @@ namespace Microsoft.EntityFrameworkCore
 
             return history;
         }
+        /// <summary>
+        /// Ensures the automatic history rollback.
+        /// Must report 2 changes, the entity goes back to its previous state and its last history if change removed
+        /// </summary>
+        /// <param name="context">The context.</param>
+        /// <param name="entity">The entity being restaured to its previous state.</param>
+        /// <param name="Id">The primary key value of the entity.</param>
 
-        public static int Rollback(this DbContext context, int historyNumber)
+        public static int Rollback(this DbContext context, object entity, object Id)
         {
             int itemsChanged = 0;
             __DbHistory = context.Set<AutoHistory>();
-            AutoHistory h = __DbHistory.Find(historyNumber);
-            
-            if (h != null && h.ParentId != null)
+            if(context.Entry(entity).State == EntityState.Detached)
+                return 0;
+            AutoHistory history = __DbHistory.Where(h => h.RowId ==  Id.ToString()).OrderByDescending(h => h.Id).FirstOrDefault();
+            if (history != null)
             {
                 try
                 {
-                    // If this entity type does not exist in this assembly, GetType throws a TypeLoadException.
-                    //Type elementType = Type.GetType(h.EntityName, true);
-                    //object obj = Activator.CreateInstance(elementType);
-                    JObject jsonObj = JObject.Parse(h.Changed);
-                    
-                    object obj = jsonObj["bef"].ToObject(Type.GetType(h.EntityName, true));
-                    context.Entry(obj).State = EntityState.Modified;
+                    // If this entity type does not exist in its assembly, GetType throws a TypeLoadException.
+                    Type elementType = Type.GetType(history.EntityName, true);
+                    JObject jsonObj = JObject.Parse(history.Changed);
+                    JToken token = jsonObj.GetValue("before");
+                    context.Entry(entity).State = EntityState.Detached;
+                    entity = Newtonsoft.Json.JsonConvert.DeserializeObject(token.ToString(),elementType);
+                    context.Remove(history);
+                    context.Entry(entity).State = EntityState.Modified;
                     itemsChanged = context.SaveChanges();
                 }
                 catch (Newtonsoft.Json.JsonReaderException ex)
                 {
                     Console.WriteLine("{0}: Unable to load json string", ex.Message);
-
                 }
                 catch (TypeLoadException e)
                 {
                     Console.WriteLine("{0}: Unable to load type", e.GetType().Name);
                 }
+                catch(NullReferenceException )
+                {
+                    //Do nothing
+                }
             }
 
             return itemsChanged;
-
 
         }
 
