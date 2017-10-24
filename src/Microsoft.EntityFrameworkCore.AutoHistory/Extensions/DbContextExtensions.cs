@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using System.Linq.Dynamic.Core;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -82,10 +83,10 @@ namespace Microsoft.EntityFrameworkCore
                 case EntityState.Modified:
                     var bef = new JObject();
                     var aft = new JObject();
-                    
+
                     foreach (var prop in properties)
                     {
-                        if(prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
+                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
                         {
                             bef[prop.Metadata.Name] = prop.OriginalValue != null
                             ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
@@ -122,7 +123,7 @@ namespace Microsoft.EntityFrameworkCore
                             ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
                             : JValue.CreateNull();
                     }
-                    
+
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
                     history.Changed = json.ToString();
@@ -137,48 +138,70 @@ namespace Microsoft.EntityFrameworkCore
         }
         /// <summary>
         /// Ensures the automatic history rollback.
-        /// Must report 2 changes, the entity goes back to its previous state and its last history if change removed
+        /// The entity goes back to a defined previous state or its last previous state.
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="entity">The entity being restaured to its previous state.</param>
-        /// <param name="Id">The primary key value of the entity.</param>
+        /// <param name="historyNumber">[Optional] The history number from where rollback is done.</param>
 
-        public static int Rollback(this DbContext context, object entity, object Id)
+        public static bool AutoHistoryRollback(this DbContext context, object entity, int? historyNumber = null)
         {
-            int itemsChanged = 0;
-            __DbHistory = context.Set<AutoHistory>();
-            if(context.Entry(entity).State == EntityState.Detached)
-                return 0;
-            AutoHistory history = __DbHistory.Where(h => h.RowId ==  Id.ToString()).OrderByDescending(h => h.Id).FirstOrDefault();
-            if (history != null)
+            if (context.Entry(entity).State == EntityState.Detached)
+                context.Attach(entity);
+
+            if (context.Entry(entity).State == EntityState.Added)
+                throw new Exception(String.Format("The entity {0} is just added", entity.GetType().Name));
+
+            var key = context.Entry(entity).Metadata.FindPrimaryKey();
+            string keyString = string.Empty;
+            if (key == null)
             {
-                try
+                throw new Exception(String.Format("The primary key value for entity {0} is null", entity.GetType().Name));
+            }
+            else
+            {
+                foreach (var property in key.Properties)
                 {
-                    // If this entity type does not exist in its assembly, GetType throws a TypeLoadException.
-                    Type elementType = Type.GetType(history.EntityName, true);
-                    JObject jsonObj = JObject.Parse(history.Changed);
-                    JToken token = jsonObj.GetValue("before");
-                    context.Entry(entity).State = EntityState.Detached;
-                    entity = Newtonsoft.Json.JsonConvert.DeserializeObject(token.ToString(),elementType);
-                    context.Remove(history);
-                    context.Entry(entity).State = EntityState.Modified;
-                    itemsChanged = context.SaveChanges();
-                }
-                catch (Newtonsoft.Json.JsonReaderException ex)
-                {
-                    Console.WriteLine("{0}: Unable to load json string", ex.Message);
-                }
-                catch (TypeLoadException e)
-                {
-                    Console.WriteLine("{0}: Unable to load type", e.GetType().Name);
-                }
-                catch(NullReferenceException )
-                {
-                    //Do nothing
+                    if (String.IsNullOrEmpty(keyString))
+                        keyString += context.Entry(entity).Property(property.Name).CurrentValue;
+                    else
+                        keyString += "," + context.Entry(entity).Property(property.Name).CurrentValue;
                 }
             }
 
-            return itemsChanged;
+            //int itemsChanged = 0;
+            __DbHistory = context.Set<AutoHistory>();
+            AutoHistory history = null;
+
+            if (historyNumber != null)
+            {
+                history = __DbHistory.Where("Id == @0 and RowId == @1", historyNumber, keyString).FirstOrDefault();
+            }
+            else
+            {
+                history = __DbHistory.Where(h => h.RowId == keyString).OrderByDescending(h => h.Id).FirstOrDefault();
+            }
+            try
+            {
+                // If this entity type does not exist in its assembly, GetType throws a TypeLoadException.
+                Type elementType = Type.GetType(history.EntityName, true);
+                JObject jsonObj = JObject.Parse(history.Changed);
+                context.Entry(entity).State = EntityState.Detached;
+                entity = Newtonsoft.Json.JsonConvert.DeserializeObject(jsonObj.GetValue("before").ToString(), elementType);
+                context.Remove(history);
+                context.Entry(entity).State = EntityState.Modified;
+                //itemsChanged = context.SaveChanges();
+            }
+            catch (Newtonsoft.Json.JsonReaderException ex)
+            {
+                Console.WriteLine("{0}: Unable to load json string", ex.Message);
+            }
+            catch (TypeLoadException e)
+            {
+                Console.WriteLine("{0}: Unable to load type", e.GetType().Name);
+            }
+
+            return true;
 
         }
 
