@@ -18,7 +18,8 @@ namespace Microsoft.EntityFrameworkCore
             {
                 b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
                 b.Property(c => c.TableName).IsRequired().HasMaxLength(128);
-                b.Property(c => c.Changed).HasMaxLength(2048);
+                b.Property(c => c.EntityName).IsRequired().HasMaxLength(128);
+                //b.Property(c => c.Changed).HasMaxLength(2048);
                 // This MSSQL only
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");
             });
