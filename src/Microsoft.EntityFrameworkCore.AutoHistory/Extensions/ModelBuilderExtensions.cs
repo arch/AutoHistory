@@ -11,8 +11,8 @@ namespace Microsoft.EntityFrameworkCore
         /// Enables the automatic recording change history.
         /// </summary>
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to enable auto history functionality.</param>
-        /// <param name="changedMaxLength">The maximum length of the 'Changed' column. Use 0 to remove the max length restriction, to use nvarchar(max).</param>
-        /// <returns>The <see cref="ModelBuilder"/> to enable auto history functionality.</returns>
+        /// <param name="changedMaxLength">The maximum length of the 'Changed' column. <c>null</c> to remove the max length restriction and will use EF Core default setting.</param>
+        /// <returns>The <see cref="ModelBuilder"/> had enabled auto history feature.</returns>
         public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength = 2048)
         {
             modelBuilder.Entity<AutoHistory>(b =>
@@ -22,8 +22,15 @@ namespace Microsoft.EntityFrameworkCore
                 var changedProperty = b.Property(c => c.Changed);
                 if (changedMaxLength.HasValue)
                 {
-                    changedProperty.HasMaxLength(changedMaxLength.Value);
+                    var max = changedMaxLength.Value;
+                    if(max <= 0)
+                    {
+                        max = 2048;    
+                    }
+
+                    changedProperty.HasMaxLength(max);
                 }
+
                 // This MSSQL only
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");
             });
