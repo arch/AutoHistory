@@ -17,7 +17,13 @@ namespace Microsoft.EntityFrameworkCore
         /// <returns>The <see cref="ModelBuilder"/> had enabled auto history feature.</returns>
         public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength)
         {
-            modelBuilder.Entity<AutoHistory>(b =>
+            return ModelBuilderExtensions.EnableAutoHistory<AutoHistory>(modelBuilder, changedMaxLength);
+        }
+
+        public static ModelBuilder EnableAutoHistory<TAutoHistory>(this ModelBuilder modelBuilder, int? changedMaxLength)
+            where TAutoHistory : AutoHistory
+        {
+            modelBuilder.Entity<TAutoHistory>(b =>
             {
                 b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
                 b.Property(c => c.TableName).IsRequired().HasMaxLength(128);
