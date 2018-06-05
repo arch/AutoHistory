@@ -1,5 +1,8 @@
 ﻿// Copyright (c) Arch team. All rights reserved.
 
+using System;
+using Microsoft.EntityFrameworkCore.Internal;
+
 namespace Microsoft.EntityFrameworkCore
 {
     /// <summary>
@@ -17,23 +20,33 @@ namespace Microsoft.EntityFrameworkCore
         /// <returns>The <see cref="ModelBuilder"/> had enabled auto history feature.</returns>
         public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength)
         {
-            return ModelBuilderExtensions.EnableAutoHistory<AutoHistory>(modelBuilder, changedMaxLength);
+            return ModelBuilderExtensions.EnableAutoHistory<AutoHistory>(modelBuilder, o =>
+            {
+                o.ChangedMaxLength = changedMaxLength;
+                o.LimitChangedLength = false;
+            });
         }
 
-        public static ModelBuilder EnableAutoHistory<TAutoHistory>(this ModelBuilder modelBuilder, int? changedMaxLength)
+        public static ModelBuilder EnableAutoHistory<TAutoHistory>(this ModelBuilder modelBuilder, Action<AutoHistoryOptions> configure)
             where TAutoHistory : AutoHistory
         {
+            var options = new AutoHistoryOptions();
+            configure?.Invoke(options);
+
             modelBuilder.Entity<TAutoHistory>(b =>
             {
-                b.Property(c => c.RowId).IsRequired().HasMaxLength(50);
-                b.Property(c => c.TableName).IsRequired().HasMaxLength(128);
+                b.Property(c => c.RowId).IsRequired().HasMaxLength(options.RowIdMaxLength);
+                b.Property(c => c.TableName).IsRequired().HasMaxLength(options.TableMaxLength);
 
-                var max = changedMaxLength ?? DefaultChangedMaxLength;
-                if (max <= 0)
+                if (options.LimitChangedLength)
                 {
-                    max = DefaultChangedMaxLength;
+                    var max = options.ChangedMaxLength ?? DefaultChangedMaxLength;
+                    if (max <= 0)
+                    {
+                        max = DefaultChangedMaxLength;
+                    }
+                    b.Property(c => c.Changed).HasMaxLength(max);
                 }
-                b.Property(c => c.Changed).HasMaxLength(max);
 
                 // This MSSQL only
                 //b.Property(c => c.Created).HasDefaultValueSql("getdate()");

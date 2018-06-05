@@ -37,7 +37,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.EnableAutoHistory<CustomAutoHistory>(changedMaxLength: null);
+            modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
         }
     }
 

@@ -42,7 +42,7 @@ bloggingContext.EnsureAutoHistory()
 You can use a custom auto history entity by extending the Microsoft.EntityFrameworkCore.AutoHistory class.
 
 ```csharp
-class CustomAutoHistory : AutoHistoryTestHandle
+class CustomAutoHistory : AutoHistory
 {
     public String CustomField { get; set; }
 }
@@ -50,7 +50,7 @@ class CustomAutoHistory : AutoHistoryTestHandle
 
 Then register it in the db context like follows:
 ```csharp
-modelBuilder.EnableAutoHistory<CustomAutoHistory>(changedMaxLength: null);
+modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
 ```
 
 Then provide a custom constructor callback when calling EnsureAutoHistory. The example shows using the
