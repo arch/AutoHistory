@@ -19,7 +19,7 @@ namespace Microsoft.EntityFrameworkCore
         {
             ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
             ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.Indented,
+            Formatting = Formatting.None,
             NullValueHandling = NullValueHandling.Ignore
         });
 
@@ -72,7 +72,7 @@ namespace Microsoft.EntityFrameworkCore
                     // REVIEW: what's the best way to set the RowId?
                     history.RowId = "0";
                     history.Kind = EntityState.Added;
-                    history.Changed = json.ToString();
+                    history.Changed = json.ToString(Formatting.None);
                     break;
                 case EntityState.Modified:
                     var bef = new JObject();
@@ -97,7 +97,7 @@ namespace Microsoft.EntityFrameworkCore
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
-                    history.Changed = json.ToString();
+                    history.Changed = json.ToString(Formatting.None);
                     break;
                 case EntityState.Deleted:
                     foreach (var prop in properties)
@@ -108,7 +108,7 @@ namespace Microsoft.EntityFrameworkCore
                     }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
-                    history.Changed = json.ToString();
+                    history.Changed = json.ToString(Formatting.None);
                     break;
                 case EntityState.Detached:
                 case EntityState.Unchanged:
