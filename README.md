@@ -38,6 +38,30 @@ public class BloggingContext : DbContext
 bloggingContext.EnsureAutoHistory()
 ```
 
+# Use Custom AutoHistory Entity
+You can use a custom auto history entity by extending the Microsoft.EntityFrameworkCore.AutoHistory class.
+
+```csharp
+class CustomAutoHistory : AutoHistory
+{
+    public String CustomField { get; set; }
+}
+```
+
+Then register it in the db context like follows:
+```csharp
+modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
+```
+
+Then provide a custom constructor callback when calling EnsureAutoHistory. The example shows using the
+callback directly, but you should use a service here that fills out your history.
+```csharp
+db.EnsureAutoHistory(() => new CustomAutoHistory()
+                    {
+                        CustomField = "CustomValue"
+                    });
+```
+
 # Integrate AutoHistory into other Package
 
 [Microsoft.EntityFrameworkCore.UnitOfWork](https://github.com/lovedotnet/UnitOfWork) had integrated this package.

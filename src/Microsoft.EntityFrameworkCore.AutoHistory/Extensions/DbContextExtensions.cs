@@ -29,21 +29,26 @@ namespace Microsoft.EntityFrameworkCore
         /// <param name="context">The context.</param>
         public static void EnsureAutoHistory(this DbContext context)
         {
+            EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory());
+        }
+
+        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryCallback)
+            where TAutoHistory : AutoHistory
+        {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
             var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
             foreach (var entry in entries)
             {
-                context.Add(entry.AutoHistory());
+                context.Add<TAutoHistory>(entry.AutoHistory(createHistoryCallback));
             }
         }
 
-        internal static AutoHistory AutoHistory(this EntityEntry entry)
+        internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry, Func<TAutoHistory> createHistoryCallback)
+            where TAutoHistory : AutoHistory
         {
-            var history = new AutoHistory
-            {
-                TableName = entry.Metadata.Relational().TableName,
-            };
+            var history = createHistoryCallback();
+            history.TableName = entry.Metadata.Relational().TableName;
 
             // Get the mapped properties for the entity type.
             // (include shadow properties, not include navigations & references)

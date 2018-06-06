@@ -45,4 +45,12 @@ namespace Microsoft.EntityFrameworkCore
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
     }
+
+    /// <summary>
+    /// This class exists so we can reference AutoHistory in the test project. The class name collides with the namespace there.
+    /// </summary>
+    internal class AutoHistoryTestHandle : AutoHistory
+    {
+
+    }
 }
