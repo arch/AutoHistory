@@ -47,7 +47,7 @@ namespace Microsoft.EntityFrameworkCore.Internal
         public int TableMaxLength { get; set; } = 128;
 
         /// <summary>
-        /// Set the formatting used when serializing json. Default: Formatting.None.
+        /// The JsonSerializerSettings for the changed column.
         /// </summary>
         public JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings()
         {
