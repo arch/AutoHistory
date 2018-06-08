@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
@@ -15,14 +16,6 @@ namespace Microsoft.EntityFrameworkCore
     /// </summary>
     public static class DbContextExtensions
     {
-        private static JsonSerializer _jsonerializer = JsonSerializer.Create(new JsonSerializerSettings
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.None,
-            NullValueHandling = NullValueHandling.Ignore
-        });
-
         /// <summary>
         /// Ensures the automatic history.
         /// </summary>
@@ -54,6 +47,8 @@ namespace Microsoft.EntityFrameworkCore
             // (include shadow properties, not include navigations & references)
             var properties = entry.Properties;
 
+            var formatting = AutoHistoryOptions.Instance.JsonSerializerSettings.Formatting;
+            var jsonSerializer = AutoHistoryOptions.Instance.JsonSerializer;
             var json = new JObject();
             switch (entry.State)
             {
@@ -65,14 +60,14 @@ namespace Microsoft.EntityFrameworkCore
                             continue;
                         }
                         json[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? JToken.FromObject(prop.CurrentValue, _jsonerializer)
+                            ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
                             : JValue.CreateNull();
                     }
 
                     // REVIEW: what's the best way to set the RowId?
                     history.RowId = "0";
                     history.Kind = EntityState.Added;
-                    history.Changed = json.ToString(Formatting.None);
+                    history.Changed = json.ToString(formatting);
                     break;
                 case EntityState.Modified:
                     var bef = new JObject();
@@ -83,11 +78,11 @@ namespace Microsoft.EntityFrameworkCore
                         if (prop.IsModified)
                         {
                             bef[prop.Metadata.Name] = prop.OriginalValue != null
-                            ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
+                            ? JToken.FromObject(prop.OriginalValue, jsonSerializer)
                             : JValue.CreateNull();
 
                             aft[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? JToken.FromObject(prop.CurrentValue, _jsonerializer)
+                            ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
                             : JValue.CreateNull();
                         }
                     }
@@ -97,18 +92,18 @@ namespace Microsoft.EntityFrameworkCore
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
-                    history.Changed = json.ToString(Formatting.None);
+                    history.Changed = json.ToString(formatting);
                     break;
                 case EntityState.Deleted:
                     foreach (var prop in properties)
                     {
                         json[prop.Metadata.Name] = prop.OriginalValue != null
-                            ? JToken.FromObject(prop.OriginalValue, _jsonerializer)
+                            ? JToken.FromObject(prop.OriginalValue, jsonSerializer)
                             : JValue.CreateNull();
                     }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
-                    history.Changed = json.ToString(Formatting.None);
+                    history.Changed = json.ToString(formatting);
                     break;
                 case EntityState.Detached:
                 case EntityState.Unchanged:
