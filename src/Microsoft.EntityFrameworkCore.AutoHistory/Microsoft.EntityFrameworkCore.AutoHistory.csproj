@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <Description>A plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.</Description>
-    <VersionPrefix>2.0.3</VersionPrefix>
+    <VersionPrefix>2.1.0</VersionPrefix>
     <Authors>rigofunc;rigofunc@outlook.com</Authors>
     <TargetFramework>netstandard2.0</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -17,6 +17,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="10.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.0.1" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.0" />
   </ItemGroup>
 </Project>
