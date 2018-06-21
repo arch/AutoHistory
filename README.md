@@ -53,8 +53,8 @@ Then register it in the db context like follows:
 modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
 ```
 
-Then provide a custom constructor callback when calling EnsureAutoHistory. The example shows using the
-callback directly, but you should use a service here that fills out your history.
+Then provide a custom history entity creating factory when calling EnsureAutoHistory. The example shows using the
+factory directly, but you should use a service here that fills out your history extended properties(The properties inherited from `AutoHistory` will be set by the framework automatically).
 ```csharp
 db.EnsureAutoHistory(() => new CustomAutoHistory()
                     {

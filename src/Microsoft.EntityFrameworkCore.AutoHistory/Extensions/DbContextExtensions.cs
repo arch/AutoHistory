@@ -3,11 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Internal;
-using Newtonsoft.Json;
+
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -25,7 +25,7 @@ namespace Microsoft.EntityFrameworkCore
             EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory());
         }
 
-        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryCallback)
+        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
             // Must ToArray() here for excluding the AutoHistory model.
@@ -33,14 +33,14 @@ namespace Microsoft.EntityFrameworkCore
             var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
             foreach (var entry in entries)
             {
-                context.Add<TAutoHistory>(entry.AutoHistory(createHistoryCallback));
+                context.Add<TAutoHistory>(entry.AutoHistory(createHistoryFactory));
             }
         }
 
-        internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry, Func<TAutoHistory> createHistoryCallback)
+        internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry, Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
-            var history = createHistoryCallback();
+            var history = createHistoryFactory();
             history.TableName = entry.Metadata.Relational().TableName;
 
             // Get the mapped properties for the entity type.

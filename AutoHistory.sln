@@ -11,6 +11,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.EntityFrameworkCo
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microsoft.EntityFrameworkCore.AutoHistory.Test", "test\Microsoft.EntityFrameworkCore.AutoHistory.Test\Microsoft.EntityFrameworkCore.AutoHistory.Test.csproj", "{2F6C239E-9F05-4654-936B-CFBB00412E4B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{D465D73A-0055-4CFC-9093-38EF1C405B44}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		NuGet.config = NuGet.config
+		README.md = README.md
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,5 +39,8 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5927DE0F-FA62-4B71-8AAF-2B3DDC405E34} = {EEF95A1B-E224-4488-91ED-4CC4EC3CEEE3}
 		{2F6C239E-9F05-4654-936B-CFBB00412E4B} = {504C6707-0D9C-4FA7-861D-B1A97AF39E32}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {ED8B7FB1-308D-49C1-8124-E03D7D6E6D85}
 	EndGlobalSection
 EndGlobal
