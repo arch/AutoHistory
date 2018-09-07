@@ -26,7 +26,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
 
-                Assert.Equal(2, count);
+                Assert.Equal(4, count); // Blog, BlogPost, History for Blog, History for BlogPost
             }
         }
         [Fact]
