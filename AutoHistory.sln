@@ -18,6 +18,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Samples", "Samples", "{DAEF4300-2306-4680-A609-86F2F9E4513A}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetCore2.2.MVC.EF.Blogs", "samples\AspNetCore2.2.MVC.EF.Blogs\AspNetCore2.2.MVC.EF.Blogs.csproj", "{AB1074C0-4529-44F0-B837-07E34AB9B321}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,6 +36,10 @@ Global
 		{2F6C239E-9F05-4654-936B-CFBB00412E4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F6C239E-9F05-4654-936B-CFBB00412E4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F6C239E-9F05-4654-936B-CFBB00412E4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB1074C0-4529-44F0-B837-07E34AB9B321}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB1074C0-4529-44F0-B837-07E34AB9B321}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB1074C0-4529-44F0-B837-07E34AB9B321}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB1074C0-4529-44F0-B837-07E34AB9B321}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -39,6 +47,7 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{5927DE0F-FA62-4B71-8AAF-2B3DDC405E34} = {EEF95A1B-E224-4488-91ED-4CC4EC3CEEE3}
 		{2F6C239E-9F05-4654-936B-CFBB00412E4B} = {504C6707-0D9C-4FA7-861D-B1A97AF39E32}
+		{AB1074C0-4529-44F0-B837-07E34AB9B321} = {DAEF4300-2306-4680-A609-86F2F9E4513A}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {ED8B7FB1-308D-49C1-8124-E03D7D6E6D85}

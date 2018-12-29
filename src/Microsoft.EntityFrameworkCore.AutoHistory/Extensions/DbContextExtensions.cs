@@ -77,13 +77,24 @@ namespace Microsoft.EntityFrameworkCore
                     {
                         if (prop.IsModified)
                         {
-                            //bef[prop.Metadata.Name] = prop.OriginalValue != null
-                            //? JToken.FromObject(prop.OriginalValue, jsonSerializer)
-                            //: JValue.CreateNull();
-                            var originalValue = entry.GetDatabaseValues().GetValue<object>(prop.Metadata.Name);
-                            bef[prop.Metadata.Name] = originalValue != null
-                            ? JToken.FromObject(originalValue, jsonSerializer)
-                            : JValue.CreateNull();
+                            if (prop.OriginalValue != null)
+                            {
+                                if (prop.OriginalValue != prop.CurrentValue)
+                                {
+                                    bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, jsonSerializer);
+                                }
+                                else
+                                {
+                                    var originalValue = entry.GetDatabaseValues().GetValue<object>(prop.Metadata.Name);
+                                    bef[prop.Metadata.Name] = originalValue != null
+                                        ? JToken.FromObject(originalValue, jsonSerializer)
+                                        : JValue.CreateNull();
+                                }
+                            }
+                            else
+                            {
+                                bef[prop.Metadata.Name] = JValue.CreateNull();
+                            }
 
                             aft[prop.Metadata.Name] = prop.CurrentValue != null
                             ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
