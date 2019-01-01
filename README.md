@@ -32,7 +32,7 @@ public class BloggingContext : DbContext
 }
 ```
 
-3. Ensure AutoHistory in DbContext
+3. Ensure AutoHistory in DbContext. This must be called before bloggingContext.SaveChanges() or bloggingContext.SaveChangesAsync().
 
 ```csharp
 bloggingContext.EnsureAutoHistory()
