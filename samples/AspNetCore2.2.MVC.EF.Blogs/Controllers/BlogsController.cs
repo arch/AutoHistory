@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,27 @@ namespace EFGetStarted.AspNetCore.NewDb.Controllers
         public async Task<IActionResult> Index()
         {
             return View(await _context.Blogs.ToListAsync());
+        }
+
+        // GET: Blogs/Create
+        public IActionResult AutoCreate()
+        {
+            var blog = new Blog
+            {
+                Posts = new List<Post>
+                {
+                    new Post
+                    {
+                        Content = $"CONTENT {DateTime.Now.Ticks}",
+                        Title = $"Title {DateTime.Now.Ticks}"
+                    }
+                },
+                Url = $"URL {DateTime.Now.Ticks}"
+            };
+            _context.Blogs.Add(blog);
+            _context.EnsureAutoHistory(true);
+            _context.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Blogs/Details/5

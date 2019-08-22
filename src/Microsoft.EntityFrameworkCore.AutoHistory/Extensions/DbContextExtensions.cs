@@ -2,11 +2,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Internal;
-
+using Microsoft.EntityFrameworkCore.Query;
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.EntityFrameworkCore
@@ -20,17 +21,28 @@ namespace Microsoft.EntityFrameworkCore
         /// Ensures the automatic history.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static void EnsureAutoHistory(this DbContext context)
+        /// <param name="useAddState">EntityStatus.Added will user too</param>
+        public static void EnsureAutoHistory(this DbContext context, bool useAddState = false)
         {
-            EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory());
+            EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory(), useAddState);
         }
 
-        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryFactory)
+        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryFactory, bool useAddState = false)
             where TAutoHistory : AutoHistory
         {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
-            var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
+            var allEntries = context.ChangeTracker.Entries();
+            IEnumerable<EntityEntry> entries = null;
+            if (useAddState)
+            {
+                entries = allEntries.Where(e=>e.State == EntityState.Modified || e.State == EntityState.Deleted || e.State == EntityState.Added).ToArray();
+            }
+            else
+            {
+                entries = allEntries.Where(e=>e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
+            }
+
             foreach (var entry in entries)
             {
                 context.Add<TAutoHistory>(entry.AutoHistory(createHistoryFactory));
@@ -53,25 +65,29 @@ namespace Microsoft.EntityFrameworkCore
             switch (entry.State)
             {
                 case EntityState.Added:
+                    var aftAdded = new JObject();
                     foreach (var prop in properties)
                     {
                         if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
                         {
                             continue;
                         }
-                        json[prop.Metadata.Name] = prop.CurrentValue != null
+                        aftAdded[prop.Metadata.Name] = prop.CurrentValue != null
                             ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
                             : JValue.CreateNull();
                     }
 
                     // REVIEW: what's the best way to set the RowId?
+                    json["before"] = null;
+                    json["after"] = aftAdded;
+
                     history.RowId = "0";
                     history.Kind = EntityState.Added;
                     history.Changed = json.ToString(formatting);
                     break;
                 case EntityState.Modified:
-                    var bef = new JObject();
-                    var aft = new JObject();
+                    var befModified = new JObject();
+                    var aftModified = new JObject();
 
                     foreach (var prop in properties)
                     {
@@ -81,41 +97,48 @@ namespace Microsoft.EntityFrameworkCore
                             {
                                 if (prop.OriginalValue != prop.CurrentValue)
                                 {
-                                    bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, jsonSerializer);
+                                    befModified[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, jsonSerializer);
                                 }
                                 else
                                 {
                                     var originalValue = entry.GetDatabaseValues().GetValue<object>(prop.Metadata.Name);
-                                    bef[prop.Metadata.Name] = originalValue != null
+                                    befModified[prop.Metadata.Name] = originalValue != null
                                         ? JToken.FromObject(originalValue, jsonSerializer)
                                         : JValue.CreateNull();
                                 }
                             }
                             else
                             {
-                                bef[prop.Metadata.Name] = JValue.CreateNull();
+                                befModified[prop.Metadata.Name] = JValue.CreateNull();
                             }
 
-                            aft[prop.Metadata.Name] = prop.CurrentValue != null
+                            aftModified[prop.Metadata.Name] = prop.CurrentValue != null
                             ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
                             : JValue.CreateNull();
                         }
                     }
 
-                    json["before"] = bef;
-                    json["after"] = aft;
+                    json["before"] = befModified;
+                    json["after"] = aftModified;
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
                     history.Changed = json.ToString(formatting);
                     break;
                 case EntityState.Deleted:
+                    var beforeDeleted = new JObject();
+
+                    json["before"] = beforeDeleted;
+                    json["after"] = null;
+
                     foreach (var prop in properties)
                     {
-                        json[prop.Metadata.Name] = prop.OriginalValue != null
+                        beforeDeleted[prop.Metadata.Name] = prop.OriginalValue != null
                             ? JToken.FromObject(prop.OriginalValue, jsonSerializer)
                             : JValue.CreateNull();
                     }
+                    json["before"] = beforeDeleted;
+                    json["after"] = null;
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
                     history.Changed = json.ToString(formatting);
