@@ -41,7 +41,7 @@ namespace Microsoft.EntityFrameworkCore
             where TAutoHistory : AutoHistory
         {
             var history = createHistoryFactory();
-            history.TableName = entry.Metadata.Relational().TableName;
+            history.TableName = entry.Metadata.GetTableName();
 
             // Get the mapped properties for the entity type.
             // (include shadow properties, not include navigations & references)
