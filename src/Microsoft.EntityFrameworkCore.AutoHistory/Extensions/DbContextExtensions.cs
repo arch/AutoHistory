@@ -29,8 +29,10 @@ namespace Microsoft.EntityFrameworkCore
             where TAutoHistory : AutoHistory
         {
             // Must ToArray() here for excluding the AutoHistory model.
-            // Currently, only support Modified and Deleted entity.
-            var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
+            // Currently, only support Modified, Deleted and IAutoHistoriableEntity entity.
+
+            var entries = context.ChangeTracker.Entries().Where(e => e.Entity.GetType().GetInterfaces().Any(k => k == typeof(IAutoHistoriableEntity)) && (e.State == EntityState.Modified || e.State == EntityState.Deleted)).ToArray();
+
             foreach (var entry in entries)
             {
                 context.Add<TAutoHistory>(entry.AutoHistory(createHistoryFactory));
