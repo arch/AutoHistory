@@ -11,7 +11,7 @@
     <PackageId>Microsoft.EntityFrameworkCore.AutoHistory</PackageId>
     <PackageTags>Entity Framework Core;entity-framework-core;EF;Data;O/RM;Auto History;auto-history</PackageTags>
     <PackageProjectUrl>https://github.com/arch/AutoHistory</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/arch/AutoHistory/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryType>git</RepositoryType>
     <RepositoryUrl>https://github.com/arch/AutoHistory.git</RepositoryUrl>
   </PropertyGroup>
