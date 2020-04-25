@@ -73,6 +73,7 @@ namespace Microsoft.EntityFrameworkCore
                     var bef = new JObject();
                     var aft = new JObject();
 
+                    PropertyValues databaseValues = null;
                     foreach (var prop in properties)
                     {
                         if (prop.IsModified)
@@ -85,7 +86,8 @@ namespace Microsoft.EntityFrameworkCore
                                 }
                                 else
                                 {
-                                    var originalValue = entry.GetDatabaseValues().GetValue<object>(prop.Metadata.Name);
+                                    databaseValues = databaseValues ?? entry.GetDatabaseValues();
+                                    var originalValue = databaseValues.GetValue<object>(prop.Metadata.Name);
                                     bef[prop.Metadata.Name] = originalValue != null
                                         ? JToken.FromObject(originalValue, jsonSerializer)
                                         : JValue.CreateNull();
