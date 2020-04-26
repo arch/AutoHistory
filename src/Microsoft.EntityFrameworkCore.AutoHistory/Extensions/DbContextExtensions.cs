@@ -22,7 +22,7 @@ namespace Microsoft.EntityFrameworkCore
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="useAddState">EntityStatus.Added will user too</param>
-        public static void EnsureAutoHistory(this DbContext context, bool useAddState = false)
+        public static void EnsureAutoHistory(this DbContext context, Func<EntityState, bool> predicate)
         {
             EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory(), useAddState);
         }
