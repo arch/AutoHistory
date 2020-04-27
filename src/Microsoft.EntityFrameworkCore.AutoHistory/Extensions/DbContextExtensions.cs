@@ -80,7 +80,7 @@ namespace Microsoft.EntityFrameworkCore
                         {
                             if (prop.OriginalValue != null)
                             {
-                                if (prop.OriginalValue != prop.CurrentValue)
+                                if (!prop.OriginalValue.Equals(prop.CurrentValue))
                                 {
                                     bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, jsonSerializer);
                                 }
