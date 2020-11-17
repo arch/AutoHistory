@@ -1,4 +1,4 @@
-﻿@model EFGetStarted.AspNetCore.NewDb.Models.Blog
+﻿@model Blog
 
 @{
     ViewData["Title"] = "Details";
@@ -8,16 +8,16 @@
 
 <div>
     <h4>Blog</h4>
-    <hr />
+    <hr/>
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Url)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Url)
         </dd>
     </dl>
 </div>
-    <a asp-action="Edit" asp-route-id="@Model.BlogId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+<a asp-action="Edit" asp-route-id="@Model.BlogId">Edit</a> |
+<a asp-action="Index">Back to List</a>
 </div>

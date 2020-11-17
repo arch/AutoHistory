@@ -3,33 +3,31 @@
 using System;
 using Microsoft.EntityFrameworkCore.Internal;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.EntityFrameworkCore
 {
     /// <summary>
-    /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
+    ///     Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
     public static class ModelBuilderExtensions
     {
         private const int DefaultChangedMaxLength = 2048;
 
         /// <summary>
-        /// Enables the automatic recording change history.
+        ///     Enables the automatic recording change history.
         /// </summary>
-        /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to enable auto history feature.</param>
+        /// <param name="modelBuilder">The <see cref="ModelBuilder" /> to enable auto history feature.</param>
         /// <param name="changedMaxLength">The maximum length of the 'Changed' column. <c>null</c> will use default setting 2048.</param>
-        /// <returns>The <see cref="ModelBuilder"/> had enabled auto history feature.</returns>
-        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength)
-        {
-            return ModelBuilderExtensions.EnableAutoHistory<AutoHistory>(modelBuilder, o =>
+        /// <returns>The <see cref="ModelBuilder" /> had enabled auto history feature.</returns>
+        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength) =>
+            modelBuilder.EnableAutoHistory<AutoHistory>(o =>
             {
                 o.ChangedMaxLength = changedMaxLength;
                 o.LimitChangedLength = false;
             });
-        }
 
-        public static ModelBuilder EnableAutoHistory<TAutoHistory>(this ModelBuilder modelBuilder, Action<AutoHistoryOptions> configure)
+        public static ModelBuilder EnableAutoHistory<TAutoHistory>(this ModelBuilder modelBuilder,
+            Action<AutoHistoryOptions> configure)
             where TAutoHistory : AutoHistory
         {
             var options = AutoHistoryOptions.Instance;
@@ -44,10 +42,7 @@ namespace Microsoft.EntityFrameworkCore
                 if (options.LimitChangedLength)
                 {
                     var max = options.ChangedMaxLength ?? DefaultChangedMaxLength;
-                    if (max <= 0)
-                    {
-                        max = DefaultChangedMaxLength;
-                    }
+                    if (max <= 0) max = DefaultChangedMaxLength;
                     b.Property(c => c.Changed).HasMaxLength(max);
                 }
 

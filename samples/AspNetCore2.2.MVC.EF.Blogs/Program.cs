@@ -5,17 +5,15 @@ namespace EFGetStarted.AspNetCore.NewDb
 {
     public class Program
     {
-        public static void Main(string[] args)
-        {
+        public static void Main(string[] args) =>
             Host.CreateDefaultBuilder(args)
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.ConfigureKestrel(serverOptions =>
-                    {
-                        // Set properties and call methods on options
-                    })
-                    .UseStartup<Startup>();
+                        {
+                            // Set properties and call methods on options
+                        })
+                        .UseStartup<Startup>();
                 });
-        }
     }
 }

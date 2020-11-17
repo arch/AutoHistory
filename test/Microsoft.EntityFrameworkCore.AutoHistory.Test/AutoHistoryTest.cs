@@ -14,12 +14,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 db.Blogs.Add(new Blog
                 {
                     Url = "http://blogs.msdn.com/adonet",
-                    Posts = new List<Post> {
-                        new Post {
-                            Title = "xUnit",
-                            Content = "Post from xUnit test."
-                        }
-                    }
+                    Posts = new List<Post> {new Post {Title = "xUnit", Content = "Post from xUnit test."}}
                 });
                 db.EnsureAutoHistory();
 
@@ -29,6 +24,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 Assert.Equal(2, count);
             }
         }
+
         [Fact]
         public void Entity_Update_AutoHistory_Test()
         {
@@ -37,12 +33,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 var blog = new Blog
                 {
                     Url = "http://blogs.msdn.com/adonet",
-                    Posts = new List<Post> {
-                        new Post {
-                            Title = "xUnit",
-                            Content = "Post from xUnit test."
-                        }
-                    }
+                    Posts = new List<Post> {new Post {Title = "xUnit", Content = "Post from xUnit test."}}
                 };
                 db.Attach(blog);
                 db.SaveChanges();

@@ -3,41 +3,37 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Internal;
-
 using Newtonsoft.Json.Linq;
 
 namespace Microsoft.EntityFrameworkCore
 {
     /// <summary>
-    /// Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
+    ///     Represents a plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.
     /// </summary>
     public static class DbContextExtensions
     {
         /// <summary>
-        /// Ensures the automatic history.
+        ///     Ensures the automatic history.
         /// </summary>
         /// <param name="context">The context.</param>
-        public static void EnsureAutoHistory(this DbContext context)
-        {
-            EnsureAutoHistory<AutoHistory>(context, () => new AutoHistory());
-        }
+        public static void EnsureAutoHistory(this DbContext context) =>
+            EnsureAutoHistory(context, () => new AutoHistory());
 
-        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context, Func<TAutoHistory> createHistoryFactory)
+        public static void EnsureAutoHistory<TAutoHistory>(this DbContext context,
+            Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
-            var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
-            foreach (var entry in entries)
-            {
-                context.Add<TAutoHistory>(entry.AutoHistory(createHistoryFactory));
-            }
+            var entries = context.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
+            foreach (var entry in entries) context.Add((object) entry.AutoHistory(createHistoryFactory));
         }
 
-        internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry, Func<TAutoHistory> createHistoryFactory)
+        internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry,
+            Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
             var history = createHistoryFactory();
@@ -55,10 +51,7 @@ namespace Microsoft.EntityFrameworkCore
                 case EntityState.Added:
                     foreach (var prop in properties)
                     {
-                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey())
-                        {
-                            continue;
-                        }
+                        if (prop.Metadata.IsKey() || prop.Metadata.IsForeignKey()) continue;
                         json[prop.Metadata.Name] = prop.CurrentValue != null
                             ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
                             : JValue.CreateNull();
@@ -75,7 +68,6 @@ namespace Microsoft.EntityFrameworkCore
 
                     PropertyValues databaseValues = null;
                     foreach (var prop in properties)
-                    {
                         if (prop.IsModified)
                         {
                             if (prop.OriginalValue != null)
@@ -99,10 +91,9 @@ namespace Microsoft.EntityFrameworkCore
                             }
 
                             aft[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
-                            : JValue.CreateNull();
+                                ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
+                                : JValue.CreateNull();
                         }
-                    }
 
                     json["before"] = bef;
                     json["after"] = aft;
@@ -113,11 +104,9 @@ namespace Microsoft.EntityFrameworkCore
                     break;
                 case EntityState.Deleted:
                     foreach (var prop in properties)
-                    {
                         json[prop.Metadata.Name] = prop.OriginalValue != null
                             ? JToken.FromObject(prop.OriginalValue, jsonSerializer)
                             : JValue.CreateNull();
-                    }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
                     history.Changed = json.ToString(formatting);
@@ -139,10 +128,7 @@ namespace Microsoft.EntityFrameworkCore
             foreach (var property in key.Properties)
             {
                 var value = entry.Property(property.Name).CurrentValue;
-                if (value != null)
-                {
-                    values.Add(value);
-                }
+                if (value != null) values.Add(value);
             }
 
             return string.Join(",", values);

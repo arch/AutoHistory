@@ -14,17 +14,9 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 db.Blogs.Add(new Blog
                 {
                     Url = "http://blogs.msdn.com/adonet",
-                    Posts = new List<Post> {
-                        new Post {
-                            Title = "xUnit",
-                            Content = "Post from xUnit test."
-                        }
-                    }
+                    Posts = new List<Post> {new Post {Title = "xUnit", Content = "Post from xUnit test."}}
                 });
-                db.EnsureAutoHistory(() => new CustomAutoHistory()
-                {
-                    CustomField = "CustomValue"
-                });
+                db.EnsureAutoHistory(() => new CustomAutoHistory {CustomField = "CustomValue"});
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
@@ -32,6 +24,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 Assert.Equal(2, count);
             }
         }
+
         [Fact]
         public void Entity_Update_AutoHistory_Test()
         {
@@ -40,22 +33,14 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 var blog = new Blog
                 {
                     Url = "http://blogs.msdn.com/adonet",
-                    Posts = new List<Post> {
-                        new Post {
-                            Title = "xUnit",
-                            Content = "Post from xUnit test."
-                        }
-                    }
+                    Posts = new List<Post> {new Post {Title = "xUnit", Content = "Post from xUnit test."}}
                 };
                 db.Attach(blog);
                 db.SaveChanges();
 
                 // nullable fix?
                 blog.Posts[0].NumViews = 10;
-                db.EnsureAutoHistory(() => new CustomAutoHistory()
-                {
-                    CustomField = "CustomValue"
-                });
+                db.EnsureAutoHistory(() => new CustomAutoHistory {CustomField = "CustomValue"});
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Modified);
 
                 Assert.Equal(1, count);

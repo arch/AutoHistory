@@ -3,26 +3,21 @@ using System.Collections.Generic;
 
 namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
 {
-
     public class BloggingContext : DbContext
     {
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
             optionsBuilder.UseInMemoryDatabase("test");
-        }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.EnableAutoHistory(changedMaxLength: null);
-        }
     }
 
-    class CustomAutoHistory : AutoHistoryTestHandle
+    internal class CustomAutoHistory : AutoHistoryTestHandle
     {
-        public String CustomField { get; set; }
+        public string CustomField { get; set; }
     }
 
     public class GenericBloggingContext : DbContext
@@ -30,15 +25,11 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) =>
             optionsBuilder.UseInMemoryDatabase("test");
-        }
 
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
+        protected override void OnModelCreating(ModelBuilder modelBuilder) =>
             modelBuilder.EnableAutoHistory<CustomAutoHistory>(o => { });
-        }
     }
 
     public class Blog

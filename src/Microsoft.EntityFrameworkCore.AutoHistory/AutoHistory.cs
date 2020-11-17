@@ -5,52 +5,52 @@ using System;
 namespace Microsoft.EntityFrameworkCore
 {
     /// <summary>
-    /// Represents the entity change history.
+    ///     Represents the entity change history.
     /// </summary>
     public class AutoHistory
     {
         /// <summary>
-        /// Gets or sets the primary key.
+        ///     Gets or sets the primary key.
         /// </summary>
         /// <value>The id.</value>
         public int Id { get; set; }
 
         /// <summary>
-        /// Gets or sets the source row id.
+        ///     Gets or sets the source row id.
         /// </summary>
         /// <value>The source row id.</value>
         public string RowId { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the table.
+        ///     Gets or sets the name of the table.
         /// </summary>
         /// <value>The name of the table.</value>
         public string TableName { get; set; }
 
         /// <summary>
-        /// Gets or sets the json about the changing.
+        ///     Gets or sets the json about the changing.
         /// </summary>
         /// <value>The json about the changing.</value>
         public string Changed { get; set; }
 
         /// <summary>
-        /// Gets or sets the change kind.
+        ///     Gets or sets the change kind.
         /// </summary>
         /// <value>The change kind.</value>
         public EntityState Kind { get; set; }
 
         /// <summary>
-        /// Gets or sets the create time.
+        ///     Gets or sets the create time.
         /// </summary>
         /// <value>The create time.</value>
         public DateTime Created { get; set; } = DateTime.UtcNow;
     }
 
     /// <summary>
-    /// This class exists so we can reference AutoHistory in the test project. The class name collides with the namespace there.
+    ///     This class exists so we can reference AutoHistory in the test project. The class name collides with the namespace
+    ///     there.
     /// </summary>
     internal class AutoHistoryTestHandle : AutoHistory
     {
-
     }
 }

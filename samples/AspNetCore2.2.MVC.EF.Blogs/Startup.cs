@@ -29,10 +29,7 @@ namespace EFGetStarted.AspNetCore.NewDb
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
             var connection = @"Server=(local);Database=AutoHistoryTest;Trusted_Connection=True;ConnectRetryCount=0";
-            services.AddDbContext<BloggingContext>(options =>
-            {
-                options.UseSqlServer(connection);
-            });
+            services.AddDbContext<BloggingContext>(options => { options.UseSqlServer(connection); });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -53,10 +50,7 @@ namespace EFGetStarted.AspNetCore.NewDb
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapDefaultControllerRoute();
-            }); 
+            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }
     }
 }

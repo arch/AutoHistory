@@ -1,5 +1,3 @@
-using System;
-
 namespace EFGetStarted.AspNetCore.NewDb.Models
 {
     public class ErrorViewModel
