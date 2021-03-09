@@ -26,9 +26,9 @@ namespace EFGetStarted.AspNetCore.NewDb
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+            services.AddControllersWithViews();
 
-            var connection = @"Server=(local);Database=AutoHistoryTest;Trusted_Connection=True;ConnectRetryCount=0";
+            var connection = @"Server=.;Database=AutoHistoryTest;Trusted_Connection=True;ConnectRetryCount=0";
             services.AddDbContext<BloggingContext>(options =>
             {
                 options.UseSqlServer(connection);
@@ -53,10 +53,18 @@ namespace EFGetStarted.AspNetCore.NewDb
             app.UseStaticFiles();
             app.UseCookiePolicy();
 
+            app.UseRouting();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapDefaultControllerRoute();
             }); 
+
+            // only runs once at system startup
+            using (var scope = app.ApplicationServices.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<BloggingContext>();
+                db.Database.Migrate();
+            }
         }
     }
 }
