@@ -2,8 +2,6 @@
 
 using System;
 using Microsoft.EntityFrameworkCore.Internal;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -34,7 +32,6 @@ namespace Microsoft.EntityFrameworkCore
         {
             var options = AutoHistoryOptions.Instance;
             configure?.Invoke(options);
-            options.JsonSerializer = JsonSerializer.Create(options.JsonSerializerSettings);
 
             modelBuilder.Entity<TAutoHistory>(b =>
             {

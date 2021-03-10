@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 
 namespace Microsoft.EntityFrameworkCore.Internal
 {
@@ -45,21 +43,5 @@ namespace Microsoft.EntityFrameworkCore.Internal
         /// The max length for the table column. Default: 128.
         /// </summary>
         public int TableMaxLength { get; set; } = 128;
-
-        /// <summary>
-        /// The JsonSerializerSettings for the changed column.
-        /// </summary>
-        public JsonSerializerSettings JsonSerializerSettings { get; set; } = new JsonSerializerSettings()
-        {
-            ReferenceLoopHandling = ReferenceLoopHandling.Ignore,
-            ContractResolver = new CamelCasePropertyNamesContractResolver(),
-            Formatting = Formatting.None,
-            NullValueHandling = NullValueHandling.Ignore
-        };
-
-        /// <summary>
-        /// The json serializer to use when writing changes. Created internally.
-        /// </summary>
-        internal JsonSerializer JsonSerializer { get; set; }
     }
 }

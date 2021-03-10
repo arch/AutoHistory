@@ -3,11 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Internal;
-
-using Newtonsoft.Json.Linq;
 
 namespace Microsoft.EntityFrameworkCore
 {
@@ -47,9 +45,7 @@ namespace Microsoft.EntityFrameworkCore
             // (include shadow properties, not include navigations & references)
             var properties = entry.Properties;
 
-            var formatting = AutoHistoryOptions.Instance.JsonSerializerSettings.Formatting;
-            var jsonSerializer = AutoHistoryOptions.Instance.JsonSerializer;
-            var json = new JObject();
+            dynamic json = new System.Dynamic.ExpandoObject();
             switch (entry.State)
             {
                 case EntityState.Added:
@@ -59,19 +55,19 @@ namespace Microsoft.EntityFrameworkCore
                         {
                             continue;
                         }
-                        json[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
-                            : JValue.CreateNull();
+                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.CurrentValue != null
+                            ? prop.CurrentValue
+                            : null;
                     }
 
                     // REVIEW: what's the best way to set the RowId?
                     history.RowId = "0";
                     history.Kind = EntityState.Added;
-                    history.Changed = json.ToString(formatting);
+                    history.Changed = JsonSerializer.Serialize(json);
                     break;
                 case EntityState.Modified:
-                    var bef = new JObject();
-                    var aft = new JObject();
+                    dynamic bef = new System.Dynamic.ExpandoObject();
+                    dynamic aft = new System.Dynamic.ExpandoObject();
 
                     PropertyValues databaseValues = null;
                     foreach (var prop in properties)
@@ -82,45 +78,45 @@ namespace Microsoft.EntityFrameworkCore
                             {
                                 if (!prop.OriginalValue.Equals(prop.CurrentValue))
                                 {
-                                    bef[prop.Metadata.Name] = JToken.FromObject(prop.OriginalValue, jsonSerializer);
+                                    ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = prop.OriginalValue;
                                 }
                                 else
                                 {
                                     databaseValues = databaseValues ?? entry.GetDatabaseValues();
                                     var originalValue = databaseValues.GetValue<object>(prop.Metadata.Name);
-                                    bef[prop.Metadata.Name] = originalValue != null
-                                        ? JToken.FromObject(originalValue, jsonSerializer)
-                                        : JValue.CreateNull();
+                                    ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = originalValue != null
+                                        ? originalValue
+                                        : null;
                                 }
                             }
                             else
                             {
-                                bef[prop.Metadata.Name] = JValue.CreateNull();
+                                ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = null;
                             }
 
-                            aft[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? JToken.FromObject(prop.CurrentValue, jsonSerializer)
-                            : JValue.CreateNull();
+                            ((IDictionary<String, Object>)aft)[prop.Metadata.Name] = prop.CurrentValue != null
+                            ? prop.CurrentValue
+                            : null;
                         }
                     }
 
-                    json["before"] = bef;
-                    json["after"] = aft;
+                    ((IDictionary<String, Object>)json)["before"] = bef;
+                    ((IDictionary<String, Object>)json)["after"] = aft;
 
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Modified;
-                    history.Changed = json.ToString(formatting);
+                    history.Changed = JsonSerializer.Serialize(json);
                     break;
                 case EntityState.Deleted:
                     foreach (var prop in properties)
                     {
-                        json[prop.Metadata.Name] = prop.OriginalValue != null
-                            ? JToken.FromObject(prop.OriginalValue, jsonSerializer)
-                            : JValue.CreateNull();
+                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.OriginalValue != null
+                            ? prop.OriginalValue
+                            : null;
                     }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
-                    history.Changed = json.ToString(formatting);
+                    history.Changed = JsonSerializer.Serialize(json);
                     break;
                 case EntityState.Detached:
                 case EntityState.Unchanged:
