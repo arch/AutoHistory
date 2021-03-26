@@ -127,6 +127,60 @@ namespace Microsoft.EntityFrameworkCore
             return history;
         }
 
+        /// <summary>
+        /// Ensures the history for added entries
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="addedEntries"></param>
+        public static void EnsureAddedHistory(
+            this DbContext context,
+            EntityEntry[] addedEntries)
+        {
+            EnsureAddedHistory<AutoHistory>(
+                context,
+                () => new AutoHistory(),
+                addedEntries);
+        }
+
+        public static void EnsureAddedHistory<TAutoHistory>(
+            this DbContext context,
+            Func<TAutoHistory> createHistoryFactory,
+            EntityEntry[] addedEntries)
+            where TAutoHistory : AutoHistory
+        {
+            foreach (var entry in addedEntries)
+            {
+                context.Add<TAutoHistory>(entry.AddedHistory(createHistoryFactory));
+            }
+        }
+
+        internal static TAutoHistory AddedHistory<TAutoHistory>(
+            this EntityEntry entry,
+            Func<TAutoHistory> createHistoryFactory)
+            where TAutoHistory : AutoHistory
+        {
+            var history = createHistoryFactory();
+            history.TableName = entry.Metadata
+                                     .GetTableName();
+
+            // Get the mapped properties for the entity type.
+            // (include shadow properties, not include navigations & references)
+            var properties = entry.Properties;
+
+            dynamic json = new System.Dynamic.ExpandoObject();
+
+            foreach (var prop in properties)
+            {
+                ((IDictionary<string, object>)json)[prop.Metadata.Name] = prop.OriginalValue != null ?
+                                                                          prop.OriginalValue
+                                                                          : null;
+            }
+            history.RowId = entry.PrimaryKey();
+            history.Kind = EntityState.Added;
+            history.Changed = JsonSerializer.Serialize(json);
+            return history;
+        }
+
         private static string PrimaryKey(this EntityEntry entry)
         {
             var key = entry.Metadata.FindPrimaryKey();
