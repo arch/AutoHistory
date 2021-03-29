@@ -14,7 +14,7 @@ namespace EFGetStarted.AspNetCore.NewDb.Models
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // enable auto history functionality.
-            modelBuilder.EnableAutoHistory(changedMaxLength: null);
+            modelBuilder.EnableAutoHistory();
         }
 
     }

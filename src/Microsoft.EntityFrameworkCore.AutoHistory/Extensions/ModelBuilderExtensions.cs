@@ -18,7 +18,7 @@ namespace Microsoft.EntityFrameworkCore
         /// <param name="modelBuilder">The <see cref="ModelBuilder"/> to enable auto history feature.</param>
         /// <param name="changedMaxLength">The maximum length of the 'Changed' column. <c>null</c> will use default setting 2048.</param>
         /// <returns>The <see cref="ModelBuilder"/> had enabled auto history feature.</returns>
-        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength)
+        public static ModelBuilder EnableAutoHistory(this ModelBuilder modelBuilder, int? changedMaxLength = null)
         {
             return ModelBuilderExtensions.EnableAutoHistory<AutoHistory>(modelBuilder, o =>
             {
