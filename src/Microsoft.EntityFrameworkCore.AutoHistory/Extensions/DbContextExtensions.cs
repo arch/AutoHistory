@@ -55,9 +55,7 @@ namespace Microsoft.EntityFrameworkCore
                         {
                             continue;
                         }
-                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? prop.CurrentValue
-                            : null;
+                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.CurrentValue;
                     }
 
                     // REVIEW: what's the best way to set the RowId?
@@ -82,11 +80,9 @@ namespace Microsoft.EntityFrameworkCore
                                 }
                                 else
                                 {
-                                    databaseValues = databaseValues ?? entry.GetDatabaseValues();
+                                    databaseValues ??= entry.GetDatabaseValues();
                                     var originalValue = databaseValues.GetValue<object>(prop.Metadata.Name);
-                                    ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = originalValue != null
-                                        ? originalValue
-                                        : null;
+                                    ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = originalValue;
                                 }
                             }
                             else
@@ -94,9 +90,7 @@ namespace Microsoft.EntityFrameworkCore
                                 ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = null;
                             }
 
-                            ((IDictionary<String, Object>)aft)[prop.Metadata.Name] = prop.CurrentValue != null
-                            ? prop.CurrentValue
-                            : null;
+                            ((IDictionary<String, Object>)aft)[prop.Metadata.Name] = prop.CurrentValue;
                         }
                     }
 
@@ -110,9 +104,7 @@ namespace Microsoft.EntityFrameworkCore
                 case EntityState.Deleted:
                     foreach (var prop in properties)
                     {
-                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.OriginalValue != null
-                            ? prop.OriginalValue
-                            : null;
+                        ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.OriginalValue;
                     }
                     history.RowId = entry.PrimaryKey();
                     history.Kind = EntityState.Deleted;
