@@ -32,10 +32,38 @@ public class BloggingContext : DbContext
 }
 ```
 
-3. Ensure AutoHistory in DbContext. This must be called before bloggingContext.SaveChanges() or bloggingContext.SaveChangesAsync().
+3. Ensure AutoHistory in DbContext. This must be called before `bloggingContext.SaveChanges()` or `bloggingContext.SaveChangesAsync()`.
 
 ```csharp
 bloggingContext.EnsureAutoHistory()
+```
+
+If you want to record data changes for all entities, just override `SaveChanges` and `SaveChangesAsync` methods and call `EnsureAutoHistory()` inside overridden version:
+```csharp
+public class BloggingContext : DbContext
+{
+    public BloggingContext(DbContextOptions<BloggingContext> options)
+        : base(options)
+    { }
+    
+    public override int SaveChanges()
+    {
+        this.EnsureAutoHistory();
+        return base.SaveChanges();
+    }
+    
+    public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+    {
+        this.EnsureAutoHistory();
+        return base.SaveChangesAsync(cancellationToken);
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        // enable auto history functionality.
+        modelBuilder.EnableAutoHistory();
+    }
+}
 ```
 
 # Use Custom AutoHistory Entity
