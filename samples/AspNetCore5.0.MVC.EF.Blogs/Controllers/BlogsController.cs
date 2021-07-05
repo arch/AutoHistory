@@ -50,7 +50,7 @@ namespace EFGetStarted.AspNetCore.NewDb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("BlogId,Url")] Blog blog)
+        public async Task<IActionResult> Create([Bind("BlogId,Url,PrivateURL")] Blog blog)
         {
             if (ModelState.IsValid)
             {
@@ -83,7 +83,7 @@ namespace EFGetStarted.AspNetCore.NewDb.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("BlogId,Url")] Blog blog)
+        public async Task<IActionResult> Edit(int id, [Bind("BlogId,Url,PrivateURL")] Blog blog)
         {
             if (id != blog.BlogId)
             {
