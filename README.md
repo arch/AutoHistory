@@ -90,6 +90,18 @@ db.EnsureAutoHistory(() => new CustomAutoHistory()
                     });
 ```
 
+# Excluding properties from AutoHistory
+You can now excluded properties from being saved into the AutoHistory tables by adding a custom attribute[ExcludeFromHistoryAttribute] attribute to your model properties. 
+
+
+```csharp
+    public class Blog
+    {        
+        [ExcludeFromHistory]
+        public string PrivateURL { get; set; }
+    }
+```
+
 # Integrate AutoHistory into other Package
 
 [Microsoft.EntityFrameworkCore.UnitOfWork](https://github.com/lovedotnet/UnitOfWork) had integrated this package.
