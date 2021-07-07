@@ -15,6 +15,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Url)
             </th>
+            <th>
+                @Html.DisplayNameFor(model => model.PrivateURL)
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -23,6 +26,9 @@
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Url)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.PrivateURL)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.BlogId">Edit</a> |

@@ -5,12 +5,14 @@ namespace EFGetStarted.AspNetCore.NewDb.Models
 {
     public class BloggingContext : DbContext
     {
-        public BloggingContext(DbContextOptions<BloggingContext> options)
+        public BloggingContext(DbContextOptions options)
             : base(options)
         { }
 
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<AutoHistory> AutoHistory { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // enable auto history functionality.
@@ -23,6 +25,9 @@ namespace EFGetStarted.AspNetCore.NewDb.Models
     {
         public int BlogId { get; set; }
         public string Url { get; set; }
+
+        [ExcludeFromHistory]
+        public string PrivateURL { get; set; }
 
         public ICollection<Post> Posts { get; set; }
     }

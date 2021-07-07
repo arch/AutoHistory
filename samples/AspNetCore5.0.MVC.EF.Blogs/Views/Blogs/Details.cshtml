@@ -10,11 +10,19 @@
     <h4>Blog</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Url)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.Url)
+        </dd>
+    </dl>
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.PrivateURL)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.PrivateURL)
         </dd>
     </dl>
 </div>

@@ -19,8 +19,9 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                             Title = "xUnit",
                             Content = "Post from xUnit test."
                         }
-                    }
-                });
+                    },
+                    PrivateURL = "http://www.secret.com"
+                }); ;
                 db.EnsureAutoHistory();
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
@@ -42,7 +43,8 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                             Title = "xUnit",
                             Content = "Post from xUnit test."
                         }
-                    }
+                    },
+                    PrivateURL = "http://www.secret.com"
                 };
                 db.Attach(blog);
                 db.SaveChanges();

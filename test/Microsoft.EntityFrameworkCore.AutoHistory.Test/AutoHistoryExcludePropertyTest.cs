@@ -4,39 +4,12 @@ using Xunit;
 
 namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
 {
-    public class AutoHistoryGenericTest
+    public class AutoHistoryExcludePropertyTest
     {
         [Fact]
-        public void Entity_Add_AutoHistory_Test()
+        public void Entity_Update_AutoHistory_Exclude_Only_Modified_Property_Changed_Test()
         {
-            using (var db = new GenericBloggingContext())
-            {
-                db.Blogs.Add(new Blog
-                {
-                    Url = "http://blogs.msdn.com/adonet",
-                    Posts = new List<Post> {
-                        new Post {
-                            Title = "xUnit",
-                            Content = "Post from xUnit test."
-                        }
-                    },
-                    PrivateURL = "http://www.secret.com"
-                });
-                db.EnsureAutoHistory(() => new CustomAutoHistory()
-                {
-                    CustomField = "CustomValue"
-                });
-
-                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
-
-
-                Assert.Equal(2, count);
-            }
-        }
-        [Fact]
-        public void Entity_Update_AutoHistory_Test()
-        {
-            using (var db = new GenericBloggingContext())
+            using (var db = new BloggingContext())
             {
                 var blog = new Blog
                 {
@@ -49,17 +22,46 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                     },
                     PrivateURL = "http://www.secret.com"
                 };
+
                 db.Attach(blog);
                 db.SaveChanges();
 
-                // nullable fix?
-                blog.Posts[0].NumViews = 10;
-                db.EnsureAutoHistory(() => new CustomAutoHistory()
-                {
-                    CustomField = "CustomValue"
-                });
-                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Modified);
+                blog.PrivateURL = "http://new.secret.com";
+                db.EnsureAutoHistory();
 
+                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+
+                //No changes are made (excluded is the only property modified)
+                Assert.Equal(0, count);
+            }
+        }
+
+        [Fact]
+        public void Entity_Update_AutoHistory_Exclude_Changed_Test()
+        {
+            using (var db = new BloggingContext())
+            {
+                var blog = new Blog
+                {
+                    Url = "http://blogs.msdn.com/adonet",
+                    Posts = new List<Post> {
+                        new Post {
+                            Title = "xUnit",
+                            Content = "Post from xUnit test."
+                        }
+                    },
+                    PrivateURL = "http://www.secret.com"
+                };
+
+                db.Attach(blog);
+                db.SaveChanges();
+
+                blog.PrivateURL = "http://new.secret.com";
+                blog.Posts[0].NumViews = 10;
+                db.EnsureAutoHistory();
+
+                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+                
                 Assert.Equal(1, count);
             }
         }

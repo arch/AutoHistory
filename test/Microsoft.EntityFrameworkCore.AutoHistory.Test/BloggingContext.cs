@@ -45,6 +45,9 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
     {
         public int BlogId { get; set; }
         public string Url { get; set; }
+        
+        [ExcludeFromHistory]
+        public string PrivateURL { get; set; }
 
         public List<Post> Posts { get; set; }
     }
