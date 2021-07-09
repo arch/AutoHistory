@@ -71,7 +71,7 @@ public class BloggingContext : DbContext
 {
     public override int SaveChanges()
     {
-        var addedEntries = this.ChangeTracker
+        var addedEntities = this.ChangeTracker
                                 .Entries()
                                 .Where(e => e.State == EntityState.Added)
                                 .ToArray(); // remember added entries,
@@ -83,7 +83,7 @@ public class BloggingContext : DbContext
 
         // after "SaveChanges" added enties now have gotten valid ids (if it was necessary)
         // and the history for them can be ensured and be saved with another "SaveChanges"
-        this.EnsureAddedHistory(addedEntries);
+        this.EnsureAddedHistory(addedEntities);
         base.SaveChanges();
     }   
 }
