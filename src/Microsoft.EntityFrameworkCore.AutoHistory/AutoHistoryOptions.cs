@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Text.Json;
 
 namespace Microsoft.EntityFrameworkCore.Internal
 {
@@ -43,5 +44,10 @@ namespace Microsoft.EntityFrameworkCore.Internal
         /// The max length for the table column. Default: 128.
         /// </summary>
         public int TableMaxLength { get; set; } = 128;
+
+        /// <summary>
+        /// The json setting for the 'Changed' column
+        /// </summary>
+        public JsonSerializerOptions JsonSerializerOptions;
     }
 }
