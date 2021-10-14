@@ -38,7 +38,7 @@ public class BloggingContext : DbContext
 bloggingContext.EnsureAutoHistory()
 ```
 
-If you want to record data changes for all entities, just override `SaveChanges` and `SaveChangesAsync` methods and call `EnsureAutoHistory()` inside overridden version:
+If you want to record data changes for all entities (except for Added - entities), just override `SaveChanges` and `SaveChangesAsync` methods and call `EnsureAutoHistory()` inside overridden version:
 ```csharp
 public class BloggingContext : DbContext
 {
@@ -65,6 +65,31 @@ public class BloggingContext : DbContext
     }
 }
 ```
+4. If you also want to record Added - Entities, which is not possible per default, override `SaveChanges` and `SaveChangesAsync` methods this way:
+```csharp
+public class BloggingContext : DbContext
+{
+    public override int SaveChanges()
+    {
+        var addedEntities = this.ChangeTracker
+                                .Entries()
+                                .Where(e => e.State == EntityState.Added)
+                                .ToArray(); // remember added entries,
+        // before EF Core is assigning valid Ids (it does on save changes, 
+        // when ids equal zero) and setting their state to 
+        // Unchanged (it does on every save changes)
+        this.EnsureAutoHistory();
+        base.SaveChanges();
+
+        // after "SaveChanges" added enties now have gotten valid ids (if it was necessary)
+        // and the history for them can be ensured and be saved with another "SaveChanges"
+        this.EnsureAddedHistory(addedEntities);
+        base.SaveChanges();
+    }   
+}
+```
+
+
 
 # Use Custom AutoHistory Entity
 You can use a custom auto history entity by extending the Microsoft.EntityFrameworkCore.AutoHistory class.
