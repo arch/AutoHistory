@@ -111,7 +111,7 @@ namespace Microsoft.EntityFrameworkCore
 
                         history.RowId = entry.PrimaryKey();
                         history.Kind = EntityState.Modified;
-                        history.Changed = JsonSerializer.Serialize(json);
+                        history.Changed = JsonSerializer.Serialize(json, AutoHistoryOptions.Instance.JsonSerializerOptions);
                         break;
                     case EntityState.Deleted:
                         foreach (var prop in properties)
@@ -120,7 +120,7 @@ namespace Microsoft.EntityFrameworkCore
                         }
                         history.RowId = entry.PrimaryKey();
                         history.Kind = EntityState.Deleted;
-                        history.Changed = JsonSerializer.Serialize(json);
+                        history.Changed = JsonSerializer.Serialize(json, AutoHistoryOptions.Instance.JsonSerializerOptions);
                         break;
                     case EntityState.Detached:
                     case EntityState.Unchanged:
@@ -194,7 +194,7 @@ namespace Microsoft.EntityFrameworkCore
             }
             history.RowId = entry.PrimaryKey();
             history.Kind = EntityState.Added;
-            history.Changed = JsonSerializer.Serialize(json);
+            history.Changed = JsonSerializer.Serialize(json, AutoHistoryOptions.Instance.JsonSerializerOptions);
             return history;
         }
 
