@@ -52,7 +52,7 @@ namespace Microsoft.EntityFrameworkCore
             var properties = entry.Properties.Where(f => !excludedProperties.Contains(f.Metadata.Name));
             //Bug: If remaining properties to check are not modified, AutoHistory still returns an object with empty changes.
 
-            if (properties.Any(p => p.IsModified))
+            if (properties.Any(p => p.IsModified) || entry.State == EntityState.Deleted)
             {
                 var history = createHistoryFactory();
                 history.TableName = entry.Metadata.GetTableName();
