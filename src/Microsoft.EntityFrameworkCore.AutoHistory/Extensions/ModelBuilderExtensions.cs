@@ -26,6 +26,7 @@ namespace Microsoft.EntityFrameworkCore
             {
                 o.ChangedMaxLength = changedMaxLength;
                 o.LimitChangedLength = false;
+                o.JsonSerializerOptions = JsonSerializerOptions;
             });
         }
 
