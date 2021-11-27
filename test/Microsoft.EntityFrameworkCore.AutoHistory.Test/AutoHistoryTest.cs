@@ -77,7 +77,6 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
             db.Attach(blog);
             db.SaveChanges();
 
-
             db.Remove(blog);
             db.EnsureAutoHistory();
             var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Deleted);
