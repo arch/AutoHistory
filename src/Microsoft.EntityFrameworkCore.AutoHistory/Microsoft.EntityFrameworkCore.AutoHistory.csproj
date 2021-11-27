@@ -3,7 +3,7 @@
     <Description>A plugin for Microsoft.EntityFrameworkCore to support automatically recording data changes history.</Description>
     <VersionPrefix>5.0.7</VersionPrefix>
     <Authors>rigofunc;rigofunc@outlook.com</Authors>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
@@ -16,6 +16,6 @@
     <RepositoryUrl>https://github.com/arch/AutoHistory.git</RepositoryUrl>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="6.0.0" />
   </ItemGroup>
 </Project>
