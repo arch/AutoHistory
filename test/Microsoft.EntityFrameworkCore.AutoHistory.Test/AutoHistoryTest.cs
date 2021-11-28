@@ -57,5 +57,32 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 Assert.Equal(1, count);
             }
         }
+
+
+        [Fact]
+        public void Entity_Delete_AutoHistory_Test()
+        {
+            using var db = new BloggingContext();
+            var blog = new Blog
+            {
+                Url = "http://blogs.msdn.com/adonet",
+                Posts = new List<Post> {
+                        new Post {
+                            Title = "xUnit",
+                            Content = "Delete Post from xUnit test."
+                        }
+                    },
+                PrivateURL = "http://www.secret.com"
+            };
+            db.Attach(blog);
+            db.SaveChanges();
+
+            db.Remove(blog);
+            db.EnsureAutoHistory();
+            var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Deleted);
+
+            // blog and post are deleted
+            Assert.Equal(2, count);
+        }
     }
 }
