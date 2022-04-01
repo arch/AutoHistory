@@ -28,7 +28,9 @@ namespace Microsoft.EntityFrameworkCore
         {
             // Must ToArray() here for excluding the AutoHistory model.
             // Currently, only support Modified and Deleted entity.
-            var entries = context.ChangeTracker.Entries().Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted).ToArray();
+            var entries = context.ChangeTracker.Entries()
+                .Where(e => e.State == EntityState.Modified || e.State == EntityState.Deleted)
+                .ToArray();
             foreach (var entry in entries)
             {
                 var autoHistory = entry.AutoHistory(createHistoryFactory);
@@ -42,6 +44,11 @@ namespace Microsoft.EntityFrameworkCore
         internal static TAutoHistory AutoHistory<TAutoHistory>(this EntityEntry entry, Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
+            if (entry.Metadata.ClrType.GetCustomAttributes(typeof(ExcludeFromHistoryAttribute), true).Any())
+            {
+                return null;
+            }
+
             // Get not excluded mapped properties for the entity type.
             // (include shadow properties, not include navigations & references)
 

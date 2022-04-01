@@ -8,6 +8,8 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
     {
         public DbSet<Blog> Blogs { get; set; }
         public DbSet<Post> Posts { get; set; }
+        public DbSet<NotTracked> NotTracked { get; set; }
+
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -45,7 +47,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
     {
         public int BlogId { get; set; }
         public string Url { get; set; }
-        
+
         [ExcludeFromHistory]
         public string PrivateURL { get; set; }
 
@@ -60,5 +62,12 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
         public int? NumViews { get; set; } = null;
         public int BlogId { get; set; }
         public Blog Blog { get; set; }
+    }
+
+    [ExcludeFromHistory]
+    public class NotTracked
+    {
+        public int NotTrackedId { get; set; }
+        public string Title { get; set; }
     }
 }
