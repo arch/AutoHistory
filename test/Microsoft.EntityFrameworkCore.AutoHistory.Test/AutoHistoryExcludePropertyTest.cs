@@ -81,7 +81,7 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
 
                 var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
 
-                //No changes are made (excluded is the only property modified)
+                //No changes are made (entire entity is excluded)
                 Assert.Equal(0, count);
             }
         }
