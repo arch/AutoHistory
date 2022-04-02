@@ -65,5 +65,25 @@ namespace Microsoft.EntityFrameworkCore.AutoHistory.Test
                 Assert.Equal(1, count);
             }
         }
+
+        [Fact]
+        public void Excluded_Entity_Update_AutoHistory_OnlyModified_Changed_Test()
+        {
+            using (var db = new BloggingContext())
+            {
+                var notTracked = new NotTracked { Title = "don't track me" };
+
+                db.Attach(notTracked);
+                db.SaveChanges();
+
+                notTracked.Title = "still not tracked";
+                db.EnsureAutoHistory();
+
+                var count = db.ChangeTracker.Entries().Count(e => e.State == EntityState.Added);
+
+                //No changes are made (entire entity is excluded)
+                Assert.Equal(0, count);
+            }
+        }
     }
 }
