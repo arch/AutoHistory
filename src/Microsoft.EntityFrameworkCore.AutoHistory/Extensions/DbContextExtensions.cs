@@ -128,7 +128,7 @@ namespace Microsoft.EntityFrameworkCore
             Func<TAutoHistory> createHistoryFactory)
             where TAutoHistory : AutoHistory
         {
-            if (!IsEntityExcluded(entry))
+            if (IsEntityExcluded(entry))
             {
                 return null;
             }
