@@ -115,7 +115,7 @@ namespace Microsoft.EntityFrameworkCore
         {
             foreach (var entry in addedEntries)
             {
-                var autoHistory = entry.AutoHistory(createHistoryFactory);
+                var autoHistory = entry.AddedHistory(createHistoryFactory);
                 if (autoHistory != null)
                 {
                     context.Add<TAutoHistory>(autoHistory);
