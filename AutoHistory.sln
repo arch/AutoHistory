@@ -19,7 +19,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{1C12ACF7-CF58-460C-8EF3-2349D8E62AC1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore5.0.MVC.EF.Blogs", "samples\AspNetCore5.0.MVC.EF.Blogs\AspNetCore5.0.MVC.EF.Blogs.csproj", "{01180CD5-4F4E-4C51-9478-00090C03FE73}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetCore.MVC.EF.Blogs", "samples\AspNetCore.MVC.EF.Blogs\AspNetCore.MVC.EF.Blogs.csproj", "{01180CD5-4F4E-4C51-9478-00090C03FE73}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
