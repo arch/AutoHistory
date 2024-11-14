@@ -135,12 +135,12 @@ namespace Microsoft.EntityFrameworkCore
 
             var properties = GetPropertiesWithoutExcluded(entry);
 
-            dynamic json = new System.Dynamic.ExpandoObject();
+            Dictionary<string, object> json = new();
             foreach (var prop in properties)
             {
-                ((IDictionary<string, object>)json)[prop.Metadata.Name] = prop.OriginalValue != null ?
-                                                                          prop.OriginalValue
-                                                                          : null;
+                json[prop.Metadata.Name] = prop.OriginalValue != null ?
+                                           prop.OriginalValue
+                                           : null;
             }
             var history = createHistoryFactory();
             history.TableName = entry.Metadata.GetTableName();
@@ -169,7 +169,7 @@ namespace Microsoft.EntityFrameworkCore
 
         private static void WriteHistoryAddedState(AutoHistory history, IEnumerable<PropertyEntry> properties)
         {
-            dynamic json = new System.Dynamic.ExpandoObject();
+            Dictionary<string, object> json = new();
 
             foreach (var prop in properties)
             {
@@ -177,7 +177,7 @@ namespace Microsoft.EntityFrameworkCore
                 {
                     continue;
                 }
-                ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.CurrentValue;
+                json[prop.Metadata.Name] = prop.CurrentValue;
             }
 
             // REVIEW: what's the best way to set the RowId?
@@ -188,9 +188,9 @@ namespace Microsoft.EntityFrameworkCore
 
         private static void WriteHistoryModifiedState(AutoHistory history, EntityEntry entry, IEnumerable<PropertyEntry> properties)
         {
-            dynamic json = new System.Dynamic.ExpandoObject();
-            dynamic bef = new System.Dynamic.ExpandoObject();
-            dynamic aft = new System.Dynamic.ExpandoObject();
+            Dictionary<string, object> json = new();
+            Dictionary<string, object> bef = new();
+            Dictionary<string, object> aft = new();
 
             PropertyValues databaseValues = null;
             foreach (var prop in properties)
@@ -201,26 +201,26 @@ namespace Microsoft.EntityFrameworkCore
                     {
                         if (!prop.OriginalValue.Equals(prop.CurrentValue))
                         {
-                            ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = prop.OriginalValue;
+                            bef[prop.Metadata.Name] = prop.OriginalValue;
                         }
                         else
                         {
                             databaseValues ??= entry.GetDatabaseValues();
                             var originalValue = databaseValues.GetValue<object>(prop.Metadata.Name);
-                            ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = originalValue;
+                            bef[prop.Metadata.Name] = originalValue;
                         }
                     }
                     else
                     {
-                        ((IDictionary<String, Object>)bef)[prop.Metadata.Name] = null;
+                        bef[prop.Metadata.Name] = null;
                     }
 
-                    ((IDictionary<String, Object>)aft)[prop.Metadata.Name] = prop.CurrentValue;
+                    aft[prop.Metadata.Name] = prop.CurrentValue;
                 }
             }
 
-            ((IDictionary<String, Object>)json)["before"] = bef;
-            ((IDictionary<String, Object>)json)["after"] = aft;
+            json["before"] = bef;
+            json["after"] = aft;
 
             history.RowId = entry.PrimaryKey();
             history.Kind = EntityState.Modified;
@@ -229,11 +229,11 @@ namespace Microsoft.EntityFrameworkCore
 
         private static void WriteHistoryDeletedState(AutoHistory history, EntityEntry entry, IEnumerable<PropertyEntry> properties)
         {
-            dynamic json = new System.Dynamic.ExpandoObject();
+            Dictionary<string, object> json = new();
 
             foreach (var prop in properties)
             {
-                ((IDictionary<String, Object>)json)[prop.Metadata.Name] = prop.OriginalValue;
+                json[prop.Metadata.Name] = prop.OriginalValue;
             }
             history.RowId = entry.PrimaryKey();
             history.Kind = EntityState.Deleted;
